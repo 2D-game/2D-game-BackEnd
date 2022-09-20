@@ -28,17 +28,30 @@ export class Lobby implements PlayerHandler {
 		return this.id
 	}
 
+	getNames(): string[] {
+		return Array.from(this.players).map((p) => p.getName())
+	}
+
 	onConnect(player: Player, name: string) {
 		player.setName(name)
 		player.setLobby(this)
-		this.players.add(player)
 
-		const names = Array.from(this.players).map((p) => p.getName())
+		const names = this.getNames()
 		this.players.forEach((p) => {
 			p.emit('player_list', newRes<PlayerList>({
 				names: names
 			}))
 		})
+		this.players.add(player)
+
+		player.on('player_list', (ev) => this.onPlayerList(ev, player))
+	}
+
+	onPlayerList(ev: string, player: Player) {
+		const names = this.getNames()
+		player.emit(ev, newRes<PlayerList>({
+			names: names
+		}))
 	}
 
 	onDisconnect(player: Player) {
