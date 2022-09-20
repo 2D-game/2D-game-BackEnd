@@ -14,6 +14,6 @@ const io = new SocketServer(httpServer, {
 
 new GameServer(io)
 
-httpServer.listen(3000, () => {
+httpServer.listen(process.env.PORT || 3000, () => {
 	console.log('Listening on port 3000')
 })
