@@ -1,14 +1,18 @@
-import { Socket } from 'socket.io'
 import { PlayerHandler } from './player_handler'
 import { Player } from './Player'
+import { newRes } from './response'
+
+type PlayerList = {
+	names: string[]
+}
 
 export class Lobby implements PlayerHandler {
 	private readonly id: string
-	private players: Map<Socket, Player>
+	private players: Set<Player>
 
 	constructor() {
 		this.id = Lobby.randomID()
-		this.players = new Map()
+		this.players = new Set()
 	}
 
 	private static randomID(): string {
@@ -24,16 +28,25 @@ export class Lobby implements PlayerHandler {
 		return this.id
 	}
 
-	onConnect(player: Player) {
-		this.players.set(player.getSocket(), player)
+	onConnect(player: Player, name: string) {
+		player.setName(name)
 		player.setLobby(this)
+		this.players.add(player)
+
+		const names = Array.from(this.players).map((p) => p.getName())
+		this.players.forEach((p) => {
+			p.emit('player_list', newRes<PlayerList>({
+				names: names
+			}))
+		})
 	}
 
 	onDisconnect(player: Player) {
-
+		this.players.delete(player)
+		player.setLobby(null)
 	}
 
 	isEmpty(): boolean {
-		return false
+		return this.players.size === 0
 	}
 }

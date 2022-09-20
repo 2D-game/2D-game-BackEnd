@@ -3,10 +3,12 @@ import { Lobby } from './lobby'
 
 export class Player {
 	private readonly socket: Socket
+	private name: string
 	private lobby: Lobby | null
 
 	constructor(socket: Socket) {
 		this.socket = socket
+		this.name = ''
 		this.lobby = null
 	}
 
@@ -26,6 +28,14 @@ export class Player {
 
 	getLobby(): Lobby | null {
 		return this.lobby
+	}
+
+	getName(): string {
+		return this.name
+	}
+
+	setName(name: string) {
+		this.name = name
 	}
 
 	setLobby(lobby: Lobby | null) {

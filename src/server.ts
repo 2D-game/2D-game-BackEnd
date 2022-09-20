@@ -2,10 +2,19 @@ import { Server as SocketServer, Socket } from 'socket.io'
 import { Lobby } from './lobby'
 import { PlayerHandler } from './player_handler'
 import { Player } from './Player'
-import { Error, newError, newRes, Res } from './response'
+import { newError, newRes } from './response'
+
+type CreateLobbyReq = {
+	name: string
+}
 
 type CreateLobbyRes = {
 	id: string
+}
+
+type JoinLobbyReq = {
+	id: string
+	name: string
 }
 
 const errNotFound = newError('Lobby not found')
@@ -25,14 +34,13 @@ export class Server implements PlayerHandler {
 
 	onConnect(player: Player) {
 		this.players.set(player.getSocket(), player)
+
 		player.on('disconnect', () => this.onDisconnect(player))
-		player.on('create_lobby', (ev) => this.onCreateLobby(ev, player))
-		player.on('join_lobby', (ev, id: string) => this.onJoinLobby(ev, player, id))
+		player.on('create_lobby', (ev, req: CreateLobbyReq) => this.onCreateLobby(ev, player, req))
+		player.on('join_lobby', (ev, req: JoinLobbyReq) => this.onJoinLobby(ev, player, req))
 	}
 
 	onDisconnect(player: Player) {
-		console.log(player)
-
 		const lobby = player.getLobby()
 		if (lobby !== null) {
 			lobby.onDisconnect(player)
@@ -44,7 +52,7 @@ export class Server implements PlayerHandler {
 		this.players.delete(player.getSocket())
 	}
 
-	onCreateLobby(ev: string, player: Player) {
+	onCreateLobby(ev: string, player: Player, req: CreateLobbyReq) {
 		if (player.getLobby() !== null) {
 			player.emit(ev, errAlreadyJoined)
 			return
@@ -52,16 +60,15 @@ export class Server implements PlayerHandler {
 
 		const lobby = new Lobby()
 		this.lobbies.set(lobby.getID(), lobby)
-		lobby.onConnect(player)
+		lobby.onConnect(player, req.name)
 
 		player.emit(ev, newRes<CreateLobbyRes>({
 			id: lobby.getID()
 		}))
 	}
 
-
-	onJoinLobby(ev: string, player: Player, id: string) {
-		const lobby = this.lobbies.get(id)
+	onJoinLobby(ev: string, player: Player, req: JoinLobbyReq) {
+		const lobby = this.lobbies.get(req.id)
 		if (lobby === undefined) {
 			player.emit(ev, errNotFound)
 			return
@@ -70,6 +77,6 @@ export class Server implements PlayerHandler {
 			return
 		}
 
-		lobby.onConnect(player)
+		lobby.onConnect(player, req.name)
 	}
 }
