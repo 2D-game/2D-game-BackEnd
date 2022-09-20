@@ -35,6 +35,7 @@ export class Lobby implements PlayerHandler {
 	onConnect(player: Player, name: string) {
 		player.setName(name)
 		player.setLobby(this)
+		this.players.add(player)
 
 		const names = this.getNames()
 		this.players.forEach((p) => {
@@ -42,7 +43,6 @@ export class Lobby implements PlayerHandler {
 				names: names
 			}))
 		})
-		this.players.add(player)
 
 		player.on('player_list', (ev) => this.onPlayerList(ev, player))
 	}
