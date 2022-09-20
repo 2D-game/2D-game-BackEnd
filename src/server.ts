@@ -5,7 +5,7 @@ import { Player } from './Player'
 import { newError, newRes } from './response'
 
 type CreateLobbyReq = {
-	name: string
+	username: string
 }
 
 type CreateLobbyRes = {
@@ -14,7 +14,7 @@ type CreateLobbyRes = {
 
 type JoinLobbyReq = {
 	id: string
-	name: string
+	username: string
 }
 
 type JoinLobbyRes = {
@@ -64,7 +64,7 @@ export class Server implements PlayerHandler {
 
 		const lobby = new Lobby()
 		this.lobbies.set(lobby.getID(), lobby)
-		lobby.onConnect(player, req.name)
+		lobby.onConnect(player, req.username)
 
 		player.emit(ev, newRes<CreateLobbyRes>({
 			id: lobby.getID()
@@ -81,7 +81,7 @@ export class Server implements PlayerHandler {
 			return
 		}
 
-		lobby.onConnect(player, req.name)
+		lobby.onConnect(player, req.username)
 		player.emit(ev, newRes<JoinLobbyRes>({
 			id: lobby.getID()
 		}))

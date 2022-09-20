@@ -3,7 +3,7 @@ import { Player } from './Player'
 import { newRes } from './response'
 
 type PlayerList = {
-	names: string[]
+	usernames: string[]
 }
 
 export class Lobby implements PlayerHandler {
@@ -28,19 +28,19 @@ export class Lobby implements PlayerHandler {
 		return this.id
 	}
 
-	getNames(): string[] {
-		return Array.from(this.players).map((p) => p.getName())
+	getUsernames(): string[] {
+		return Array.from(this.players).map((p) => p.getUsername())
 	}
 
 	onConnect(player: Player, name: string) {
-		player.setName(name)
+		player.setUsername(name)
 		player.setLobby(this)
 		this.players.add(player)
 
-		const names = this.getNames()
+		const usernames = this.getUsernames()
 		this.players.forEach((p) => {
 			p.emit('player_list', newRes<PlayerList>({
-				names: names
+				usernames: usernames
 			}))
 		})
 
@@ -48,9 +48,9 @@ export class Lobby implements PlayerHandler {
 	}
 
 	onPlayerList(ev: string, player: Player) {
-		const names = this.getNames()
+		const usernames = this.getUsernames()
 		player.emit(ev, newRes<PlayerList>({
-			names: names
+			usernames: usernames
 		}))
 	}
 

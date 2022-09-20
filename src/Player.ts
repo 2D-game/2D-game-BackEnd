@@ -3,12 +3,12 @@ import { Lobby } from './lobby'
 
 export class Player {
 	private readonly socket: Socket
-	private name: string
+	private username: string
 	private lobby: Lobby | null
 
 	constructor(socket: Socket) {
 		this.socket = socket
-		this.name = ''
+		this.username = ''
 		this.lobby = null
 	}
 
@@ -30,12 +30,12 @@ export class Player {
 		return this.lobby
 	}
 
-	getName(): string {
-		return this.name
+	getUsername(): string {
+		return this.username
 	}
 
-	setName(name: string) {
-		this.name = name
+	setUsername(name: string) {
+		this.username = name
 	}
 
 	setLobby(lobby: Lobby | null) {
