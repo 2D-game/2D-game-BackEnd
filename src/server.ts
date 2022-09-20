@@ -78,5 +78,6 @@ export class Server implements PlayerHandler {
 		}
 
 		lobby.onConnect(player, req.name)
+		player.emit(ev, newRes<null>(null))
 	}
 }
