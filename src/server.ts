@@ -17,6 +17,10 @@ type JoinLobbyReq = {
 	name: string
 }
 
+type JoinLobbyRes = {
+	id: string
+}
+
 const errNotFound = newError('Lobby not found')
 const errAlreadyJoined = newError('Already joined a lobby')
 
@@ -78,6 +82,8 @@ export class Server implements PlayerHandler {
 		}
 
 		lobby.onConnect(player, req.name)
-		player.emit(ev, newRes<null>(null))
+		player.emit(ev, newRes<JoinLobbyRes>({
+			id: lobby.getID()
+		}))
 	}
 }
