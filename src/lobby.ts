@@ -34,6 +34,6 @@ export class Lobby implements PlayerHandler {
 	}
 
 	isEmpty(): boolean {
-		return true
+		return false
 	}
 }

@@ -7,9 +7,16 @@ export type Res<Type> = {
 	data: Type | null
 }
 
-export function newError<Type>(message: string): Res<Type> {
+export function newError(message: string): Res<null> {
 	return {
 		error: { message: message },
 		data: null
+	}
+}
+
+export function newRes<Type>(data: Type): Res<Type> {
+	return {
+		error: null,
+		data: data
 	}
 }

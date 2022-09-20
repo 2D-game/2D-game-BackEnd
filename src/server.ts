@@ -2,15 +2,14 @@ import { Server as SocketServer, Socket } from 'socket.io'
 import { Lobby } from './lobby'
 import { PlayerHandler } from './player_handler'
 import { Player } from './Player'
-import { Error, newError } from './error'
+import { Error, newError, newRes, Res } from './response'
 
-type JoinLobbyRes = {
-	error: Error | null
-	id: string | null
+type CreateLobbyRes = {
+	id: string
 }
 
-const errNotFound = newError<JoinLobbyRes>('Lobby not found')
-const errAlreadyJoined = newError<JoinLobbyRes>('Already joined a lobby')
+const errNotFound = newError('Lobby not found')
+const errAlreadyJoined = newError('Already joined a lobby')
 
 export class Server implements PlayerHandler {
 	private io: SocketServer
@@ -55,10 +54,9 @@ export class Server implements PlayerHandler {
 		this.lobbies.set(lobby.getID(), lobby)
 		lobby.onConnect(player)
 
-		player.emit(ev, <JoinLobbyRes>{
-			error: null,
+		player.emit(ev, newRes<CreateLobbyRes>({
 			id: lobby.getID()
-		})
+		}))
 	}
 
 
