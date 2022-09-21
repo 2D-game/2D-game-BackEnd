@@ -1,20 +1,10 @@
-import express from 'express'
-import * as http from 'http'
-import { Server as SocketServer } from 'socket.io'
-import { Server as GameServer } from './server'
+import * as session from './session'
+import * as lobby from './lobby'
+import * as player from './player'
 
-const app = express()
-const httpServer = http.createServer(app)
-const io = new SocketServer(httpServer, {
-	cors: {
-		origin: "*",
-		methods: ["GET", "POST"]
-	}
-})
+const sessionRepo = new session.Repository()
+const lobbyRepo = new lobby.Repository()
+const playerRepo = new player.Repository(lobbyRepo.getIndex(), sessionRepo.getIndex())
+const lobbyUcase = new lobby.Usecase(lobbyRepo, playerRepo, sessionRepo)
 
-new GameServer(io)
-
-const port = process.env.PORT || 3000
-httpServer.listen(port, () => {
-	console.log('Listening on port ' + port)
-})
+const [ss, res] = lobbyUcase.createLobby({ username: 'foo' })

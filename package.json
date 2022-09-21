@@ -1,7 +1,7 @@
 {
 	"name": "game",
 	"version": "1.0.0",
-	"main": "src/index.ts",
+	"main": "src/old/index.ts",
 	"repository": "git@github.com:2D-game/2D-game-BackEnd.git",
 	"author": "WaScript3r <wascript3r@gmail.com>",
 	"license": "MIT",
