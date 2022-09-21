@@ -80,10 +80,10 @@ export class Repository {
 		const id = crypto.randomUUID()
 		session.setID(id)
 
-		this.index.insertPlayerSession(session)
 		if (this.sessions.has(id)) {
 			throw new Error(ErrSessionAlreadyExists)
 		}
+		this.index.insertPlayerSession(session)
 		this.sessions.set(id, session)
 	}
 

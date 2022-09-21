@@ -79,11 +79,11 @@ class Index {
 }
 
 export class Repository {
-	private readonly lobbies: Set<Lobby>
+	private readonly lobbies: Map<string, Lobby>
 	private readonly index: Index
 
 	constructor() {
-		this.lobbies = new Set()
+		this.lobbies = new Map()
 		this.index = new Index()
 	}
 
@@ -92,26 +92,40 @@ export class Repository {
 	}
 
 	insert(lobby: Lobby) {
-		lobby.setID(random.digits(4))
-		this.index.insertLobby(lobby)
-		if (this.lobbies.has(lobby)) {
+		const id = random.digits(4)
+		lobby.setID(id)
+
+		if (this.lobbies.has(id)) {
 			throw new Error(ErrLobbyAlreadyExists)
 		}
-		this.lobbies.add(lobby)
+		this.index.insertLobby(lobby)
+		this.lobbies.set(id, lobby)
 	}
 
-	delete(lobby: Lobby) {
-		this.index.deleteLobby(lobby)
-		if (!this.lobbies.delete(lobby)) {
+	get(id: string): Lobby {
+		const l = this.lobbies.get(id)
+		if (l === undefined) {
 			throw new Error(ErrLobbyNotFound)
 		}
+		return l
 	}
 
-	playersCount(lobby: Lobby): number {
-		return this.index.playersCount(lobby)
+	delete(id: string) {
+		const l = this.get(id)
+		if (l === undefined) {
+			throw new Error(ErrLobbyNotFound)
+		}
+		this.index.deleteLobby(l)
+		this.lobbies.delete(id)
 	}
 
-	getPlayers(lobby: Lobby): Set<Player> {
-		return this.index.getPlayers(lobby)
+	playersCount(id: string): number {
+		const l = this.get(id)
+		return this.index.playersCount(l)
+	}
+
+	getPlayers(id: string): Set<Player> {
+		const l = this.get(id)
+		return this.index.getPlayers(l)
 	}
 }

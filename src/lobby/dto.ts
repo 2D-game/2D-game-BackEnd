@@ -15,3 +15,10 @@ export type JoinLobbyReq = CreatePlayer & {
 export type JoinLobbyRes = {
 	id: string
 }
+
+export type GetPlayersRes = {
+	users: {
+		id: string
+		username: string
+	}[]
+}
