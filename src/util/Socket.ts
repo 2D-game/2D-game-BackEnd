@@ -60,4 +60,12 @@ export class ExtendedSocket {
 			data: arg,
 		})
 	}
+
+	public join(room: string): void {
+		this.socket.join(room)
+	}
+
+	public leave(room: string): void {
+		this.socket.leave(room)
+	}
 }

@@ -1,8 +1,9 @@
 import { Server as SocketServer } from 'socket.io'
 import { ExtendedSocket } from '../util/Socket'
 
-export interface IHandlerFactory {
-	  create(socket: ExtendedSocket): IHandler
+export abstract class IHandlerFactory {
+	abstract create(socket: ExtendedSocket): IHandler
+	registerListeners() {}
 }
 
 export interface IHandler {
@@ -24,6 +25,7 @@ export class Server {
 	}
 
 	registerListeners() {
+		this.factories.forEach(factory => factory.registerListeners())
 		this.io.on('connection', (socket) => {
 			const ext = new ExtendedSocket(socket)
 			this.factories.forEach((factory) => factory.create(ext).registerListeners())

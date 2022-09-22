@@ -2,16 +2,19 @@ import { Repository as LobbyRepository, Lobby, Presenter } from './'
 import { Repository as PlayerRepository, Player } from '../player'
 import { Repository as SessionRepository, Session } from '../session'
 import * as dto from './dto'
+import { Event, EventBus } from './EventBus'
 
 export class Usecase {
 	private readonly lobbyRepo: LobbyRepository
 	private readonly playerRepo: PlayerRepository
 	private readonly sessionRepo: SessionRepository
+	private readonly evBus: EventBus
 
-	constructor(lobbyRepo: LobbyRepository, playerRepo: PlayerRepository, sessionRepo: SessionRepository) {
+	constructor(lobbyRepo: LobbyRepository, playerRepo: PlayerRepository, sessionRepo: SessionRepository, evBus: EventBus) {
 		this.lobbyRepo = lobbyRepo
 		this.playerRepo = playerRepo
 		this.sessionRepo = sessionRepo
+		this.evBus = evBus
 	}
 
 	createLobby(req: dto.CreateLobbyReq): [Session, dto.CreateLobbyRes] {
@@ -26,6 +29,7 @@ export class Usecase {
 		const session = new Session(player)
 		this.sessionRepo.insert(session)
 
+		this.evBus.publish(Event.NEW_PLAYER, lobby)
 		return [session, {
 			id: lobby.getID(),
 		}]
@@ -42,13 +46,14 @@ export class Usecase {
 		const session = new Session(player)
 		this.sessionRepo.insert(session)
 
+		this.evBus.publish(Event.NEW_PLAYER, lobby)
 		return [session, {
 			id: lobby.getID()
 		}]
 	}
 
-	getPlayers(player: Player): dto.GetPlayersRes {
-		const players = this.lobbyRepo.getPlayers(player.getLobby().getID())
+	getPlayers(lobby: Lobby): dto.GetPlayersRes {
+		const players = this.lobbyRepo.getPlayers(lobby.getID())
 		return Presenter.getPlayerRes(players)
 	}
 
