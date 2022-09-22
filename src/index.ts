@@ -27,7 +27,7 @@ playerRepo
 	.addIndex(lobbyRepo.getPlayerIndex())
 const playerEvBus = new player.EventBus()
 const playerUcase = new player.Usecase(playerRepo, sessionRepo, playerEvBus)
-const lobbyUcase = new lobby.Usecase(lobbyRepo, playerUcase, sessionRepo, lobbyEvBus, playerEvBus)
+const lobbyUcase = new lobby.Usecase(lobbyRepo, playerUcase, lobbyEvBus, playerEvBus)
 const lobbyHndFact = new lobby.HandlerFactory(io, lobbyUcase, sessionUcase, lobbyEvBus)
 const playerHndFact = new player.HandlerFactory(playerUcase, sessionUcase, playerEvBus)
 

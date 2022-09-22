@@ -1,20 +1,18 @@
 import { Repository as LobbyRepository, Lobby, Presenter, Event as LobbyEvent, EventBus as LobbyEventBus } from './'
 import { Player, Usecase as PlayerUsecase } from '../player'
-import { Repository as SessionRepository, Session } from '../session'
 import * as dto from './dto'
 import { Event as PlayerEvent , EventBus as PlayerEventBus } from '../player'
+import { Session } from '../session'
 
 export class Usecase {
 	private readonly lobbyRepo: LobbyRepository
 	private readonly playerUcase: PlayerUsecase
-	private readonly sessionRepo: SessionRepository
 	private readonly lobbyEvBus: LobbyEventBus
 	private readonly playerEvBus: PlayerEventBus
 
-	constructor(lobbyRepo: LobbyRepository, playerUcase: PlayerUsecase, sessionRepo: SessionRepository, lobbyEvBus: LobbyEventBus, playerEvBus: PlayerEventBus) {
+	constructor(lobbyRepo: LobbyRepository, playerUcase: PlayerUsecase, lobbyEvBus: LobbyEventBus, playerEvBus: PlayerEventBus) {
 		this.lobbyRepo = lobbyRepo
 		this.playerUcase = playerUcase
-		this.sessionRepo = sessionRepo
 		this.lobbyEvBus = lobbyEvBus
 		this.playerEvBus = playerEvBus
 
