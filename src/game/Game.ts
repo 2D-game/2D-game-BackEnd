@@ -1,16 +1,13 @@
-const ErrGameAlreadyStarted = 'Game already started';
+import { Map } from "../map";
 
 export class Game {
-	private started: boolean
+	private readonly map: Map
 
-	constructor() {
-		this.started = false
+	constructor(map: Map) {
+		this.map = map
 	}
 
-	start() {
-		if (this.started) {
-			throw new Error(ErrGameAlreadyStarted)
-		}
-		this.started = true
+	getMap(): Map {
+		return this.map
 	}
 }

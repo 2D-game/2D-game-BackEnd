@@ -12,13 +12,14 @@ function getLobbyRoom(lobby: Lobby) {
 	return `lobby:${lobby.getID()}`
 }
 
-export class HandlerFactory implements IHandlerFactory {
+export class HandlerFactory extends IHandlerFactory {
 	private readonly io: IOServer
 	private readonly lobbyUcase: LobbyUsecase
 	private readonly sessionUcase: SessionUsecase
 	private readonly evBus: EventBus
 
 	constructor(io: IOServer, lobbyUcase: LobbyUsecase, sessionUcase: SessionUsecase, evBus: EventBus) {
+		super()
 		this.io = io
 		this.lobbyUcase = lobbyUcase
 		this.sessionUcase = sessionUcase

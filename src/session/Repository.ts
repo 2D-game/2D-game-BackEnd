@@ -26,8 +26,7 @@ class PlayerIndexAdapter implements IIndex<Player> {
 	}
 
 	update(oldPlayer: Player, newPlayer: Player) {
-		this.delete(oldPlayer)
-		this.insert(newPlayer)
+		this.index.updatePlayer(oldPlayer, newPlayer)
 	}
 }
 
@@ -53,6 +52,20 @@ class Index {
 		if (s !== null) {
 			throw new Error(ErrPlayerHasSession)
 		}
+	}
+
+	updatePlayer(oldPlayer: Player, newPlayer: Player) {
+		if (this.playerSession.has(newPlayer)) {
+			throw new Error(ErrPlayerAlreadyExists)
+		}
+
+		const s = this.playerSession.get(oldPlayer)
+		if (s === undefined) {
+			throw new Error(ErrPlayerNotFound)
+		}
+
+		this.playerSession.delete(oldPlayer)
+		this.playerSession.set(newPlayer, s)
 	}
 
 	insertPlayerSession(session: Session) {

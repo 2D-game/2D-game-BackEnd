@@ -51,12 +51,14 @@ export class PlayerUpdate extends Player {
 		super(username, lobby)
 	}
 
-	setLobby(lobby: Lobby | null) {
+	setLobby(lobby: Lobby | null): PlayerUpdate {
 		this.lobby = lobby
+		return this
 	}
 
-	setGame(game: Game | null) {
+	setGame(game: Game | null): PlayerUpdate {
 		this.game = game
+		return this
 	}
 
 	build(): Player {
