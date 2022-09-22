@@ -15,6 +15,8 @@ export class Usecase {
 	}
 
 	createLobby(req: dto.CreateLobbyReq): [Session, dto.CreateLobbyRes] {
+		dto.CreateLobbyReq.parse(req)
+
 		const lobby = new Lobby()
 		this.lobbyRepo.insert(lobby)
 
@@ -30,6 +32,8 @@ export class Usecase {
 	}
 
 	joinLobby(req: dto.JoinLobbyReq): [Session, dto.JoinLobbyRes] {
+		dto.JoinLobbyReq.parse(req)
+
 		const lobby = this.lobbyRepo.get(req.id)
 
 		const player = new Player(req.username, lobby)

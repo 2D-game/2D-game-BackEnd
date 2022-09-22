@@ -1,13 +1,17 @@
 import { Socket } from 'socket.io'
+import { ZodError } from 'zod'
 
 type Error = {
 	message: string
+	data: any
 }
 
 type Response = {
 	error: Error | null
 	data: any
 }
+
+const ErrInvalidInput = 'Invalid input'
 
 export class ExtendedSocket {
 	private readonly socket: Socket
@@ -31,17 +35,20 @@ export class ExtendedSocket {
 			try {
 				handler(ev, ...args)
 			} catch (e: any) {
-				if (e instanceof Error) {
-					this.emitErr(ev, e.message)
+				if (e instanceof ZodError) {
+					this.emitErr(ev, ErrInvalidInput, e.format())
+				} else if (e instanceof Error) {
+					this.emitErr(ev, e.message, null)
 				}
 			}
 		}
 	}
 
-	private emitErr(event: string, message: string): void {
+	private emitErr(event: string, message: string, data: any): void {
 		this.socket.emit(event, <Response>{
 			error: <Error>{
 				message: message,
+				data: data,
 			},
 			data: null,
 		})
