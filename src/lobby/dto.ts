@@ -6,21 +6,21 @@ export const CreatePlayer = z.object({
 })
 export type CreatePlayer = z.infer<typeof CreatePlayer>
 
-// CreateLobby
-export const CreateLobbyReq = CreatePlayer
-export type CreateLobbyReq = CreatePlayer
+// Create
+export const CreateReq = CreatePlayer
+export type CreateReq = CreatePlayer
 
-export type CreateLobbyRes = {
+export type CreateRes = {
 	id: string
 }
 
-// JoinLobby
-export const JoinLobbyReq = CreatePlayer.merge(z.object({
+// Join
+export const JoinReq = CreatePlayer.merge(z.object({
 	id: z.string().length(4),
 }))
-export type JoinLobbyReq = z.infer<typeof JoinLobbyReq>
+export type JoinReq = z.infer<typeof JoinReq>
 
-export type JoinLobbyRes = {
+export type JoinRes = {
 	id: string
 }
 

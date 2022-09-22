@@ -20,8 +20,8 @@ export class Usecase {
 		playerEvBus.subscribe(PlayerEvent.PLAYER_DISCONNECTED, this.onPlayerDisconnect.bind(this))
 	}
 
-	create(req: dto.CreateLobbyReq): [Session, dto.CreateLobbyRes] {
-		dto.CreateLobbyReq.parse(req)
+	create(req: dto.CreateReq): [Session, dto.CreateRes] {
+		dto.CreateReq.parse(req)
 
 		const lobby = new Lobby()
 		this.lobbyRepo.insert(lobby)
@@ -32,8 +32,8 @@ export class Usecase {
 		}]
 	}
 
-	join(req: dto.JoinLobbyReq): [Session, dto.JoinLobbyRes] {
-		dto.JoinLobbyReq.parse(req)
+	join(req: dto.JoinLobbyReq): [Session, dto.JoinRes] {
+		dto.JoinReq.parse(req)
 
 		const lobby = this.lobbyRepo.get(req.id)
 

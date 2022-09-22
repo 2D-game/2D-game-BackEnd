@@ -59,7 +59,7 @@ export class Handler implements IHandler {
 		socket.on('player_list', socket.wrapErrHandler(this.onPlayerList.bind(this)))
 	}
 
-	private joinLobby(ev: string, session: Session, res: dto.CreateLobbyRes | dto.JoinLobbyRes) {
+	private joinLobby(ev: string, session: Session, res: dto.CreateRes | dto.JoinRes) {
 		const lobby = session.getPlayer().getLobby()
 		if (lobby === null) {
 			throw new Error(ErrNotInLobby)
@@ -70,7 +70,7 @@ export class Handler implements IHandler {
 		this.socket.join(getLobbyRoom(lobby))
 	}
 
-	private onCreateLobby(ev: string, req: dto.CreateLobbyReq) {
+	private onCreateLobby(ev: string, req: dto.CreatReq) {
 		this.sessionUcase.notAuthGuard(this.socket, ErrAlreadyInLobby)
 
 		const [ss, res] = this.lobbyUcase.create(req)
