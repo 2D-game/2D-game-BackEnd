@@ -44,21 +44,29 @@ export class ExtendedSocket {
 		}
 	}
 
-	private emitErr(event: string, message: string, data: any): void {
-		this.socket.emit(event, <Response>{
-			error: <Error>{
+	public static error(message: string, data: any): Response {
+		return {
+			error: {
 				message: message,
 				data: data,
 			},
 			data: null,
-		})
+		}
+	}
+
+	private emitErr(event: string, message: string, data: any): void {
+		this.socket.emit(event, ExtendedSocket.error(message, data))
+	}
+
+	public static response(data: any): Response {
+		return {
+			error: null,
+			data: data,
+		}
 	}
 
 	public emit(event: string, arg: any): void {
-		this.socket.emit(event, <Response>{
-			error: null,
-			data: arg,
-		})
+		this.socket.emit(event, ExtendedSocket.response(arg))
 	}
 
 	public join(room: string): void {

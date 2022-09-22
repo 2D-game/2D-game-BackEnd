@@ -35,9 +35,10 @@ export class HandlerFactory implements IHandlerFactory, IHandler {
 	}
 
 	private onPlayerListChange(lobby: Lobby) {
+		const res = ExtendedSocket.response(this.lobbyUcase.getPlayers(lobby))
 		this.io
 			.to(getLobbyRoom(lobby))
-			.emit('player_list', this.lobbyUcase.getPlayers(lobby))
+			.emit('player_list', res)
 	}
 }
 
