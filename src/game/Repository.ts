@@ -9,7 +9,7 @@ const ErrGamePlayerNotFound = 'Game player not found'
 const ErrGamePlayerAlreadyExists = 'Game player already exists'
 const ErrPlayerIsNotInGame = 'Player is not in game'
 
-class PlayerIndexAdapter implements IIndex<Player>{
+class PlayerIndexAdapter implements IIndex<Player> {
 	private readonly index: Index
 
 	constructor(index: Index) {
@@ -31,10 +31,8 @@ class PlayerIndexAdapter implements IIndex<Player>{
 	}
 
 	update(oldPlayer: Player, newPlayer: Player) {
-		if (oldPlayer.getGame() !== newPlayer.getGame()) {
-			this.delete(oldPlayer)
-			this.insert(newPlayer)
-		}
+		this.delete(oldPlayer)
+		this.insert(newPlayer)
 	}
 }
 
