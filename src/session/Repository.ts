@@ -24,6 +24,11 @@ class PlayerIndexAdapter implements IIndex<Player> {
 	delete(player: Player) {
 		this.index.deletePlayer(player)
 	}
+
+	update(oldPlayer: Player, newPlayer: Player) {
+		this.delete(oldPlayer)
+		this.insert(newPlayer)
+	}
 }
 
 class Index {

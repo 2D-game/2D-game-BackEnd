@@ -1,21 +1,21 @@
 import { Player } from './Player'
 import * as crypto from 'crypto'
-import { IIndex } from '../repository'
+import { IIndex, Indexes } from '../repository'
 
 const ErrPlayerAlreadyExists = 'Player already exists'
 const ErrPlayerNotFound = 'Player not found'
 
 export class Repository {
 	private readonly players: Map<string, Player>
-	private readonly indexes: IIndex<Player>[]
+	private readonly indexes: Indexes<Player>
 
 	constructor() {
 		this.players = new Map()
-		this.indexes = []
+		this.indexes = new Indexes()
 	}
 
 	addIndex(index: IIndex<Player>): this {
-		this.indexes.push(index)
+		this.indexes.add(index)
 		return this
 	}
 
@@ -26,7 +26,7 @@ export class Repository {
 		if (this.players.has(id)) {
 			throw new Error(ErrPlayerAlreadyExists)
 		}
-		this.indexes.forEach((index) => index.insert(player))
+		this.indexes.onInsert(player)
 		this.players.set(id, player)
 	}
 
@@ -35,7 +35,16 @@ export class Repository {
 		if (p === undefined) {
 			throw new Error(ErrPlayerNotFound)
 		}
-		this.indexes.forEach((index) => index.delete(p))
+		this.indexes.onDelete(p)
 		this.players.delete(id)
+	}
+
+	update(id: string, newPlayer: Player) {
+		const p = this.players.get(id)
+		if (p === undefined) {
+			throw new Error(ErrPlayerNotFound)
+		}
+		this.indexes.onUpdate(p, newPlayer)
+		this.players.set(id, newPlayer)
 	}
 }

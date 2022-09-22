@@ -8,6 +8,7 @@ const ErrLobbyNotEmpty = 'Lobby not empty'
 const ErrLobbyAlreadyExists = 'Lobby already exists'
 const ErrLobbyPlayerNotFound = 'Lobby player not found'
 const ErrLobbyPlayerAlreadyExists = 'Lobby player already exists'
+const ErrPlayerIsNotInLobby = 'Player is not in game'
 
 class PlayerIndexAdapter implements IIndex<Player>{
 	private readonly index: Index
@@ -17,11 +18,22 @@ class PlayerIndexAdapter implements IIndex<Player>{
 	}
 
 	insert(player: Player) {
+		if (player.getLobby() === null) {
+			return
+		}
 		this.index.insertLobbyPlayer(player)
 	}
 
 	delete(player: Player) {
+		if (player.getLobby() === null) {
+			return
+		}
 		this.index.deleteLobbyPlayer(player)
+	}
+
+	update(oldPlayer: Player, newPlayer: Player) {
+		this.delete(oldPlayer)
+		this.insert(newPlayer)
 	}
 }
 
@@ -68,6 +80,10 @@ class Index {
 
 	insertLobbyPlayer(player: Player) {
 		const lobby = player.getLobby()
+		if (lobby === null) {
+			throw new Error(ErrPlayerIsNotInLobby)
+		}
+
 		const p = this.lobbyPlayers.get(lobby)
 		if (p === undefined) {
 			throw new Error(ErrLobbyNotFound)
@@ -80,6 +96,10 @@ class Index {
 
 	deleteLobbyPlayer(player: Player) {
 		const lobby = player.getLobby()
+		if (lobby === null) {
+			throw new Error(ErrPlayerIsNotInLobby)
+		}
+
 		const p = this.lobbyPlayers.get(lobby)
 		if (p === undefined) {
 			throw new Error(ErrLobbyNotFound)

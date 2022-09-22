@@ -1,18 +1,18 @@
 import { ExtendedSocket } from '../util/Socket'
-import { Lobby, Usecase as LobbyUsecase } from './'
+import { EventBus, Event, Lobby, Usecase as LobbyUsecase } from './'
 import { Session, Usecase as SessionUsecase } from '../session'
 import * as dto from './dto'
 import { IHandler, IHandlerFactory } from '../server'
-import { Event, EventBus } from './EventBus'
 import { Server as IOServer } from 'socket.io'
 
+const ErrNotInLobby = 'Not in lobby'
 const ErrAlreadyInLobby = 'Already in lobby'
 
 function getLobbyRoom(lobby: Lobby) {
 	return `lobby:${lobby.getID()}`
 }
 
-export class HandlerFactory implements IHandlerFactory, IHandler {
+export class HandlerFactory implements IHandlerFactory {
 	private readonly io: IOServer
 	private readonly lobbyUcase: LobbyUsecase
 	private readonly sessionUcase: SessionUsecase
@@ -20,18 +20,17 @@ export class HandlerFactory implements IHandlerFactory, IHandler {
 
 	constructor(io: IOServer, lobbyUcase: LobbyUsecase, sessionUcase: SessionUsecase, evBus: EventBus) {
 		this.io = io
-		this.evBus = evBus
 		this.lobbyUcase = lobbyUcase
 		this.sessionUcase = sessionUcase
+		this.evBus = evBus
 	}
 
 	create(socket: ExtendedSocket) {
-		return new Handler(this.io, socket, this.lobbyUcase, this.sessionUcase)
+		return new Handler(socket, this.lobbyUcase, this.sessionUcase)
 	}
 
 	registerListeners() {
-		this.evBus.subscribe(Event.NEW_PLAYER, this.onPlayerListChange.bind(this))
-		this.evBus.subscribe(Event.DISCONNECTED_PLAYER, this.onPlayerListChange.bind(this))
+		this.evBus.subscribe(Event.PLAYER_LIST_CHANGE, this.onPlayerListChange.bind(this))
 	}
 
 	private onPlayerListChange(lobby: Lobby) {
@@ -43,13 +42,11 @@ export class HandlerFactory implements IHandlerFactory, IHandler {
 }
 
 export class Handler implements IHandler {
-	private readonly io: IOServer
 	private readonly socket: ExtendedSocket
 	private readonly lobbyUcase: LobbyUsecase
 	private readonly sessionUcase: SessionUsecase
 
-	constructor(io: IOServer, socket: ExtendedSocket, lobbyUcase: LobbyUsecase, sessionUcase: SessionUsecase) {
-		this.io = io
+	constructor(socket: ExtendedSocket, lobbyUcase: LobbyUsecase, sessionUcase: SessionUsecase) {
 		this.socket = socket
 		this.lobbyUcase = lobbyUcase
 		this.sessionUcase = sessionUcase
@@ -60,14 +57,17 @@ export class Handler implements IHandler {
 		socket.on('create_lobby', socket.wrapErrHandler(this.onCreateLobby.bind(this)))
 		socket.on('join_lobby', socket.wrapErrHandler(this.onJoinLobby.bind(this)))
 		socket.on('player_list', socket.wrapErrHandler(this.onPlayerList.bind(this)))
-
-		socket.underlying().on('disconnect', this.onDisconnect.bind(this))
 	}
 
 	private joinLobby(ev: string, session: Session, res: dto.CreateLobbyRes | dto.JoinLobbyRes) {
+		const lobby = session.getPlayer().getLobby()
+		if (lobby === null) {
+			throw new Error(ErrNotInLobby)
+		}
+
 		this.sessionUcase.setSession(this.socket, session)
 		this.socket.emit(ev, res)
-		this.socket.join(getLobbyRoom(session.getPlayer().getLobby()))
+		this.socket.join(getLobbyRoom(lobby))
 	}
 
 	private onCreateLobby(ev: string, req: dto.CreateLobbyReq) {
@@ -86,16 +86,12 @@ export class Handler implements IHandler {
 
 	private onPlayerList(ev: string) {
 		const s = this.sessionUcase.authGuard(this.socket)
-
-		const res = this.lobbyUcase.getPlayers(s.getPlayer().getLobby())
-		this.socket.emit(ev, res)
-	}
-
-	public onDisconnect() {
-		const ss = this.sessionUcase.getSession(this.socket)
-		if (ss === null) {
-			return
+		const lobby = s.getPlayer().getLobby()
+		if (lobby === null) {
+			throw new Error(ErrNotInLobby)
 		}
-		this.lobbyUcase.disconnect(ss)
+
+		const res = this.lobbyUcase.getPlayers(lobby)
+		this.socket.emit(ev, res)
 	}
 }
