@@ -3,6 +3,7 @@ import { EventBus as AEventBus } from '../util/EventBus'
 
 export enum Event {
 	NEW_PLAYER = 'NEW_PLAYER',
+	DISCONNECTED_PLAYER = 'DISCONNECTED_PLAYER',
 }
 
 export class EventBus extends AEventBus<Event, Lobby> {

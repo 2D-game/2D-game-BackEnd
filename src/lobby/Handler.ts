@@ -30,10 +30,11 @@ export class HandlerFactory implements IHandlerFactory, IHandler {
 	}
 
 	registerListeners() {
-		this.evBus.subscribe(Event.NEW_PLAYER, this.onNewPlayer.bind(this))
+		this.evBus.subscribe(Event.NEW_PLAYER, this.onPlayerListChange.bind(this))
+		this.evBus.subscribe(Event.DISCONNECTED_PLAYER, this.onPlayerListChange.bind(this))
 	}
 
-	private onNewPlayer(lobby: Lobby) {
+	private onPlayerListChange(lobby: Lobby) {
 		this.io
 			.to(getLobbyRoom(lobby))
 			.emit('player_list', this.lobbyUcase.getPlayers(lobby))

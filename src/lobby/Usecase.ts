@@ -60,5 +60,12 @@ export class Usecase {
 	disconnect(session: Session) {
 		this.sessionRepo.delete(session.getID())
 		this.playerRepo.delete(session.getPlayer().getID())
+
+		const lobby = session.getPlayer().getLobby()
+		if (this.lobbyRepo.playersCount(lobby.getID()) === 0) {
+			this.lobbyRepo.delete(lobby.getID())
+		} else {
+			this.evBus.publish(Event.DISCONNECTED_PLAYER, lobby)
+		}
 	}
 }
