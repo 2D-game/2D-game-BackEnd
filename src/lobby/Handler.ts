@@ -2,8 +2,11 @@ import { ExtendedSocket } from '../util/Socket'
 import { Usecase as LobbyUsecase } from './'
 import { Usecase as SessionUsecase } from '../session'
 import * as dto from './dto'
+import { IHandler, IHandlerFactory } from '../server'
 
-export class HandlerFactory {
+const ErrAlreadyInLobby = 'Already in lobby'
+
+export class HandlerFactory implements IHandlerFactory {
 	private readonly lobbyUsecase: LobbyUsecase
 	private readonly sessionUsecase: SessionUsecase
 
@@ -17,7 +20,7 @@ export class HandlerFactory {
 	}
 }
 
-export class Handler {
+export class Handler implements IHandler {
 	private readonly socket: ExtendedSocket
 	private readonly lobbyUcase: LobbyUsecase
 	private readonly sessionUcase: SessionUsecase
@@ -26,20 +29,27 @@ export class Handler {
 		this.socket = socket
 		this.lobbyUcase = lobbyUcase
 		this.sessionUcase = sessionUcase
+	}
 
-		socket.on('create_lobby', this.onCreateLobby)
-		socket.on('join_lobby', this.onJoinLobby)
-		socket.on('player_list', this.onPlayerList)
-		socket.underlying().on('disconnect', this.onDisconnect)
+	public registerListeners() {
+		const socket = this.socket
+		socket.on('create_lobby', socket.wrapErrHandler(this.onCreateLobby.bind(this)))
+		socket.on('join_lobby', socket.wrapErrHandler(this.onJoinLobby.bind(this)))
+		socket.on('player_list', socket.wrapErrHandler(this.onPlayerList.bind(this)))
+		socket.underlying().on('disconnect', socket.wrapErrHandler(this.onDisconnect.bind(this)))
 	}
 
 	private onCreateLobby(ev: string, req: dto.CreateLobbyReq) {
+		this.sessionUcase.notAuthGuard(this.socket, ErrAlreadyInLobby)
+
 		const [ss, res] = this.lobbyUcase.createLobby(req)
 		this.sessionUcase.setSession(this.socket, ss)
 		this.socket.emit(ev, res)
 	}
 
 	private onJoinLobby(ev: string, req: dto.JoinLobbyReq) {
+		this.sessionUcase.notAuthGuard(this.socket, ErrAlreadyInLobby)
+
 		const [ss, res] = this.lobbyUcase.joinLobby(req)
 		this.sessionUcase.setSession(this.socket, ss)
 		this.socket.emit(ev, res)

@@ -19,4 +19,19 @@ export class Usecase {
 		}
 		return this.repo.get(id)
 	}
+
+	authGuard(socket: ExtendedSocket, errMessage: string): Session {
+		const session = this.getSession(socket)
+		if (session === null) {
+			throw new Error(errMessage)
+		}
+		return session
+	}
+
+	notAuthGuard(socket: ExtendedSocket, errMessage: string) {
+		const session = this.getSession(socket)
+		if (session !== null) {
+			throw new Error(errMessage)
+		}
+	}
 }

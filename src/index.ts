@@ -27,7 +27,9 @@ const io = new SocketServer(httpServer, {
 	}
 })
 
-new server.Handler(io, lobbyHndFact)
+new server.Server(io)
+	.addHandlerFactory(lobbyHndFact)
+	.registerListeners()
 
 const port = process.env.PORT || 3000
 httpServer.listen(port, () => {
