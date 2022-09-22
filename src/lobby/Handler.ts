@@ -70,14 +70,14 @@ export class Handler implements IHandler {
 		this.socket.join(getLobbyRoom(lobby))
 	}
 
-	private onCreateLobby(ev: string, req: dto.CreatReq) {
+	private onCreateLobby(ev: string, req: dto.CreateReq) {
 		this.sessionUcase.notAuthGuard(this.socket, ErrAlreadyInLobby)
 
 		const [ss, res] = this.lobbyUcase.create(req)
 		this.joinLobby(ev, ss, res)
 	}
 
-	private onJoinLobby(ev: string, req: dto.JoinLobbyReq) {
+	private onJoinLobby(ev: string, req: dto.JoinReq) {
 		this.sessionUcase.notAuthGuard(this.socket, ErrAlreadyInLobby)
 
 		const [ss, res] = this.lobbyUcase.join(req)

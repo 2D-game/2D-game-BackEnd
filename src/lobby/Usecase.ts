@@ -32,7 +32,7 @@ export class Usecase {
 		}]
 	}
 
-	join(req: dto.JoinLobbyReq): [Session, dto.JoinRes] {
+	join(req: dto.JoinReq): [Session, dto.JoinRes] {
 		dto.JoinReq.parse(req)
 
 		const lobby = this.lobbyRepo.get(req.id)
