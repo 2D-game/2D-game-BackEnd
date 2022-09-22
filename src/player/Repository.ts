@@ -1,20 +1,22 @@
 import { Player } from './Player'
-import { PlayerIndex as LobbyIndex } from '../lobby'
-import { PlayerIndex as SessionIndex } from '../session'
 import * as crypto from 'crypto'
+import { IIndex } from '../repository'
 
 const ErrPlayerAlreadyExists = 'Player already exists'
 const ErrPlayerNotFound = 'Player not found'
 
 export class Repository {
 	private readonly players: Map<string, Player>
-	private readonly lobbyIndex: LobbyIndex
-	private readonly sessionIndex: SessionIndex
+	private readonly indexes: IIndex<Player>[]
 
-	constructor(lobbyIndex: LobbyIndex, sessionIndex: SessionIndex) {
+	constructor() {
 		this.players = new Map()
-		this.lobbyIndex = lobbyIndex
-		this.sessionIndex = sessionIndex
+		this.indexes = []
+	}
+
+	addIndex(index: IIndex<Player>): this {
+		this.indexes.push(index)
+		return this
 	}
 
 	insert(player: Player) {
@@ -24,8 +26,7 @@ export class Repository {
 		if (this.players.has(id)) {
 			throw new Error(ErrPlayerAlreadyExists)
 		}
-		this.sessionIndex.insertPlayer(player)
-		this.lobbyIndex.insertLobbyPlayer(player)
+		this.indexes.forEach((index) => index.insert(player))
 		this.players.set(id, player)
 	}
 
@@ -34,8 +35,7 @@ export class Repository {
 		if (p === undefined) {
 			throw new Error(ErrPlayerNotFound)
 		}
-		this.sessionIndex.deletePlayer(p)
-		this.lobbyIndex.deleteLobbyPlayer(p)
+		this.indexes.forEach((index) => index.delete(p))
 		this.players.delete(id)
 	}
 }

@@ -1,6 +1,7 @@
 import { Lobby } from './Lobby'
 import { Player } from '../player'
 import * as random from '../util/random'
+import { IIndex } from '../repository'
 
 const ErrLobbyNotFound = 'Lobby not found'
 const ErrLobbyNotEmpty = 'Lobby not empty'
@@ -8,9 +9,20 @@ const ErrLobbyAlreadyExists = 'Lobby already exists'
 const ErrLobbyPlayerNotFound = 'Lobby player not found'
 const ErrLobbyPlayerAlreadyExists = 'Lobby player already exists'
 
-export interface PlayerIndex {
-	insertLobbyPlayer(player: Player): void
-	deleteLobbyPlayer(player: Player): void
+class PlayerIndexAdapter implements IIndex<Player>{
+	private readonly index: Index
+
+	constructor(index: Index) {
+		this.index = index
+	}
+
+	insert(player: Player) {
+		this.index.insertLobbyPlayer(player)
+	}
+
+	delete(player: Player) {
+		this.index.deleteLobbyPlayer(player)
+	}
 }
 
 class Index {
@@ -87,8 +99,8 @@ export class Repository {
 		this.index = new Index()
 	}
 
-	getIndex(): PlayerIndex {
-		return this.index
+	getPlayerIndex(): PlayerIndexAdapter {
+		return new PlayerIndexAdapter(this.index)
 	}
 
 	insert(lobby: Lobby) {

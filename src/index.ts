@@ -1,16 +1,36 @@
+import express from 'express'
+import * as http from 'http'
+import { Server as SocketServer } from 'socket.io'
+
 import * as session from './session'
 import * as lobby from './lobby'
 import * as player from './player'
+import * as server from './server'
 
 const sessionRepo = new session.Repository()
+const sessionUcase = new session.Usecase(sessionRepo)
+
 const lobbyRepo = new lobby.Repository()
-const playerRepo = new player.Repository(lobbyRepo.getIndex(), sessionRepo.getIndex())
+const playerRepo = new player.Repository()
+playerRepo
+	.addIndex(sessionRepo.getPlayerIndex())
+	.addIndex(lobbyRepo.getPlayerIndex())
 const lobbyUcase = new lobby.Usecase(lobbyRepo, playerRepo, sessionRepo)
+const lobbyHndFact = new lobby.HandlerFactory(lobbyUcase, sessionUcase)
 
-const [ss1, res1] = lobbyUcase.createLobby({ username: 'foo' })
-console.log(ss1, res1)
+const app = express()
+const httpServer = http.createServer(app)
+const io = new SocketServer(httpServer, {
+	cors: {
+		origin: "*",
+		methods: ["GET", "POST"]
+	}
+})
 
-const [ss2, res2] = lobbyUcase.joinLobby({ id: res1.id, username: 'bar' })
-console.log(ss2, res2)
+new server.Handler(io, lobbyHndFact)
 
-console.log(lobbyUcase.getPlayers(ss2.getPlayer()))
+const port = process.env.PORT || 3000
+httpServer.listen(port, () => {
+	console.log('Listening on port ' + port)
+})
+

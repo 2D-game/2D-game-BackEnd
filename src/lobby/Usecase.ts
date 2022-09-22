@@ -47,4 +47,9 @@ export class Usecase {
 		const players = this.lobbyRepo.getPlayers(player.getLobby().getID())
 		return Presenter.getPlayerRes(players)
 	}
+
+	disconnect(session: Session) {
+		this.sessionRepo.delete(session.getID())
+		this.playerRepo.delete(session.getPlayer().getID())
+	}
 }

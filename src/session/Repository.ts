@@ -1,6 +1,7 @@
 import { Session } from './Session'
 import { Player } from '../player'
 import * as crypto from 'crypto'
+import { IIndex } from '../repository'
 
 const ErrSessionNotFound = 'Session not found'
 const ErrSessionAlreadyExists = 'Session already exists'
@@ -9,9 +10,20 @@ const ErrPlayerAlreadyExists = 'Player already exists'
 const ErrPlayerSessionAlreadyExists = 'Player session already exists'
 const ErrPlayerHasSession = 'Player has an active session'
 
-export interface PlayerIndex {
-	insertPlayer(player: Player): void
-	deletePlayer(player: Player): void
+class PlayerIndexAdapter implements IIndex<Player> {
+	private readonly index: Index
+
+	constructor(index: Index) {
+		this.index = index
+	}
+
+	insert(player: Player) {
+		this.index.insertPlayer(player)
+	}
+
+	delete(player: Player) {
+		this.index.deletePlayer(player)
+	}
 }
 
 class Index {
@@ -72,8 +84,8 @@ export class Repository {
 		this.index = new Index()
 	}
 
-	getIndex(): PlayerIndex {
-		return this.index
+	getPlayerIndex(): PlayerIndexAdapter {
+		return new PlayerIndexAdapter(this.index)
 	}
 
 	insert(session: Session) {
