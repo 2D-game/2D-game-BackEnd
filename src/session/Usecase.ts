@@ -1,6 +1,8 @@
 import { ExtendedSocket } from '../util/Socket'
 import { Session, Repository } from './'
 
+const ErrForbidden = 'Forbidden'
+
 export class Usecase {
 	private readonly repo: Repository
 
@@ -20,7 +22,7 @@ export class Usecase {
 		return this.repo.get(id)
 	}
 
-	authGuard(socket: ExtendedSocket, errMessage: string): Session {
+	authGuard(socket: ExtendedSocket, errMessage: string = ErrForbidden): Session {
 		const session = this.getSession(socket)
 		if (session === null) {
 			throw new Error(errMessage)
@@ -28,7 +30,7 @@ export class Usecase {
 		return session
 	}
 
-	notAuthGuard(socket: ExtendedSocket, errMessage: string) {
+	notAuthGuard(socket: ExtendedSocket, errMessage: string = ErrForbidden) {
 		const session = this.getSession(socket)
 		if (session !== null) {
 			throw new Error(errMessage)

@@ -36,7 +36,7 @@ export class Handler implements IHandler {
 		socket.on('create_lobby', socket.wrapErrHandler(this.onCreateLobby.bind(this)))
 		socket.on('join_lobby', socket.wrapErrHandler(this.onJoinLobby.bind(this)))
 		socket.on('player_list', socket.wrapErrHandler(this.onPlayerList.bind(this)))
-		socket.underlying().on('disconnect', socket.wrapErrHandler(this.onDisconnect.bind(this)))
+		socket.underlying().on('disconnect', this.onDisconnect.bind(this))
 	}
 
 	private onCreateLobby(ev: string, req: dto.CreateLobbyReq) {
@@ -56,11 +56,9 @@ export class Handler implements IHandler {
 	}
 
 	private onPlayerList(ev: string) {
-		const ss = this.sessionUcase.getSession(this.socket)
-		if (ss === null) {
-			return
-		}
-		const res = this.lobbyUcase.getPlayers(ss.getPlayer())
+		const s = this.sessionUcase.authGuard(this.socket)
+
+		const res = this.lobbyUcase.getPlayers(s.getPlayer())
 		this.socket.emit(ev, res)
 	}
 

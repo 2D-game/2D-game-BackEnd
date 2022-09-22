@@ -71,7 +71,7 @@ class Index {
 		if (s === null) {
 			throw new Error(ErrSessionNotFound)
 		}
-		this.playerSession.delete(session.getPlayer())
+		this.playerSession.set(session.getPlayer(), null)
 	}
 }
 
