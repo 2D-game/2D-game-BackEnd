@@ -19,6 +19,7 @@ export class Presenter {
 			map: {
 				height: map.getHeight(),
 				width: map.getWidth(),
+				spawnPoint: map.getSpawnPoint(),
 				objects: objects
 			}
 		}

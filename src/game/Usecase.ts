@@ -17,7 +17,11 @@ export class Usecase {
 	}
 
 	start(lobby: Lobby): dto.StartRes {
-		const game = new Game(lobby.getID(), new Map(10, 10, { x: 1, y: 1 }))
+		const game = new Game(
+			lobby.getID(),
+			new Map(10, 10, { x: 1, y: 1 })
+				.addWallOutline()
+		)
 
 		lobby.getPlayers().forEach(player => {
 			player.setLobby(null).setGame(game)
