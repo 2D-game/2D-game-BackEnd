@@ -1,33 +1,29 @@
-import { Repository as PlayerRepository, Player, Event, EventBus } from '../player'
-import { Repository as SessionRepository, Session } from '../session'
+import { Player, Event, EventBus } from '../player'
+import { Session } from '../session'
 import { Lobby } from '../lobby'
+import { Sessions } from '../session'
 
 export class Usecase {
-	private readonly playerRepo: PlayerRepository
-	private readonly sessionRepo: SessionRepository
+	private readonly sessions: Sessions
 	private readonly evBus: EventBus
 
-	constructor(playerRepo: PlayerRepository, sessionRepo: SessionRepository, evBus: EventBus) {
-		this.playerRepo = playerRepo
-		this.sessionRepo = sessionRepo
+	constructor(sessions: Sessions, evBus: EventBus) {
+		this.sessions = sessions
 		this.evBus = evBus
 	}
 
 	create(username: string, lobby: Lobby): Session {
 		const player = new Player(username, lobby)
-		this.playerRepo.insert(player)
 
 		const session = new Session(player)
-		this.sessionRepo.insert(session)
+		this.sessions.add(session)
 
 		this.evBus.publish(Event.PLAYER_CREATED, player)
 		return session
 	}
 
 	disconnect(session: Session) {
-		this.sessionRepo.delete(session.getID())
-		const player = session.getPlayer()
-		this.playerRepo.delete(player.getID())
-		this.evBus.publish(Event.PLAYER_DISCONNECTED, player)
+		this.sessions.delete(session.getID())
+		this.evBus.publish(Event.PLAYER_DISCONNECTED, session.getPlayer())
 	}
 }

@@ -1,19 +1,33 @@
+import * as random from '../util/random'
+import { Player } from '../player'
+
 export class Lobby {
-	private id: string | null
+	private readonly id: string
+	private readonly players: Set<Player>
 
 	constructor() {
-		this.id = null
-	}
-
-	setID(id: string) {
-		this.id = id
+		this.id = random.digits(4)
+		this.players = new Set()
 	}
 
 	getID(): string {
-		if (this.id === null) {
-			throw new Error('Lobby ID is not set')
-		}
 		return this.id
+	}
+
+	addPlayer(player: Player): void {
+		this.players.add(player)
+	}
+
+	getPlayers(): Set<Player> {
+		return this.players
+	}
+
+	playerCount(): number {
+		return this.players.size
+	}
+
+	deletePlayer(player: Player): void {
+		this.players.delete(player)
 	}
 }
 

@@ -1,5 +1,4 @@
 export * from './Game'
-export * from './Repository'
 export * from './dto'
 export * from './Presenter'
 export * from './Usecase'

@@ -1,35 +1,21 @@
 import { Lobby } from '../lobby'
 import { Game } from '../game'
+import * as crypto from 'crypto'
 
 export class Player {
-	protected id: string | null
+	protected id: string
 	protected readonly username: string
 	protected lobby: Lobby | null
 	protected game: Game | null
 
 	constructor(username: string, lobby: Lobby | null = null) {
-		this.id = null
+		this.id = crypto.randomUUID()
 		this.username = username
 		this.lobby = lobby
 		this.game = null
 	}
 
-	protected getInstance(): Player {
-		return this
-	}
-
-	updateBuilder(): PlayerUpdate {
-		return new PlayerUpdate(this.username, this.lobby)
-	}
-
-	setID(id: string) {
-		this.id = id
-	}
-
 	getID(): string {
-		if (this.id === null) {
-			throw new Error('Player ID is not set')
-		}
 		return this.id
 	}
 
@@ -41,27 +27,17 @@ export class Player {
 		return this.lobby
 	}
 
-	getGame(): Game | null {
-		return this.game
-	}
-}
-
-export class PlayerUpdate extends Player {
-	constructor(username: string, lobby: Lobby | null) {
-		super(username, lobby)
-	}
-
-	setLobby(lobby: Lobby | null): PlayerUpdate {
+	setLobby(lobby: Lobby | null): Player {
 		this.lobby = lobby
 		return this
 	}
 
-	setGame(game: Game | null): PlayerUpdate {
-		this.game = game
-		return this
+	getGame(): Game | null {
+		return this.game
 	}
 
-	build(): Player {
-		return super.getInstance()
+	setGame(game: Game | null): Player {
+		this.game = game
+		return this
 	}
 }

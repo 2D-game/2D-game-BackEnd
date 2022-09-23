@@ -1,20 +1,18 @@
-import { Repository as LobbyRepository, Lobby, Presenter, Event as LobbyEvent, EventBus as LobbyEventBus } from './'
-import { Player, Usecase as PlayerUsecase } from '../player'
+import { Event as LobbyEvent, EventBus as LobbyEventBus, Lobby, Presenter } from './'
+import { Event as PlayerEvent, EventBus as PlayerEventBus, Player, Usecase as PlayerUsecase } from '../player'
 import * as dto from './dto'
-import { Event as PlayerEvent , EventBus as PlayerEventBus } from '../player'
 import { Session } from '../session'
+import { Lobbies } from './Lobbies'
 
 export class Usecase {
-	private readonly lobbyRepo: LobbyRepository
+	private readonly lobbies: Lobbies
 	private readonly playerUcase: PlayerUsecase
 	private readonly lobbyEvBus: LobbyEventBus
-	private readonly playerEvBus: PlayerEventBus
 
-	constructor(lobbyRepo: LobbyRepository, playerUcase: PlayerUsecase, lobbyEvBus: LobbyEventBus, playerEvBus: PlayerEventBus) {
-		this.lobbyRepo = lobbyRepo
+	constructor(playerUcase: PlayerUsecase, lobbyEvBus: LobbyEventBus, playerEvBus: PlayerEventBus) {
+		this.lobbies = new Lobbies()
 		this.playerUcase = playerUcase
 		this.lobbyEvBus = lobbyEvBus
-		this.playerEvBus = playerEvBus
 
 		playerEvBus.subscribe(PlayerEvent.PLAYER_CREATED, this.onPlayerConnect.bind(this))
 		playerEvBus.subscribe(PlayerEvent.PLAYER_DISCONNECTED, this.onPlayerDisconnect.bind(this))
@@ -24,28 +22,27 @@ export class Usecase {
 		dto.CreateReq.parse(req)
 
 		const lobby = new Lobby()
-		this.lobbyRepo.insert(lobby)
-
+		this.lobbies.add(lobby)
 		const session = this.playerUcase.create(req.username, lobby)
+
 		return [session, {
-			id: lobby.getID(),
+			id: lobby.getID()
 		}]
 	}
 
 	join(req: dto.JoinReq): [Session, dto.JoinRes] {
 		dto.JoinReq.parse(req)
 
-		const lobby = this.lobbyRepo.get(req.id)
-
+		const lobby = this.lobbies.get(req.id)
 		const session = this.playerUcase.create(req.username, lobby)
+
 		return [session, {
 			id: lobby.getID()
 		}]
 	}
 
 	getPlayers(lobby: Lobby): dto.GetPlayersRes {
-		const players = this.lobbyRepo.getPlayers(lobby.getID())
-		return Presenter.getPlayerRes(players)
+		return Presenter.getPlayerRes(lobby.getPlayers())
 	}
 
 	onPlayerConnect(player: Player) {
@@ -53,6 +50,7 @@ export class Usecase {
 		if (lobby === null) {
 			return
 		}
+		lobby.addPlayer(player)
 
 		this.lobbyEvBus.publish(LobbyEvent.PLAYER_LIST_CHANGE, lobby)
 	}
@@ -62,9 +60,10 @@ export class Usecase {
 		if (lobby === null) {
 			return
 		}
+		lobby.deletePlayer(player)
 
-		if (this.lobbyRepo.playersCount(lobby.getID()) === 0) {
-			this.lobbyRepo.delete(lobby.getID())
+		if (lobby.playerCount() === 0) {
+			this.lobbies.delete(lobby.getID())
 		} else {
 			this.lobbyEvBus.publish(LobbyEvent.PLAYER_LIST_CHANGE, lobby)
 		}
