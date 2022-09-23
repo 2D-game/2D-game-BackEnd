@@ -24,7 +24,6 @@ export class Usecase {
 			lobby.deletePlayer(player)
 			game.addPlayer(player)
 		})
-		console.log(lobby.getPlayers())
 		this.lobbies.delete(lobby.getID())
 		this.gameEvBus.publish(GameEvent.PLAYER_LIST_CHANGE, game)
 
