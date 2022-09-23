@@ -31,10 +31,38 @@ class PlayerIndexAdapter implements IIndex<Player> {
 }
 
 class Index {
+	private readonly sessions: Map<string, Session>
 	private readonly playerSession: Map<Player, Session | null>
 
 	constructor() {
+		this.sessions = new Map()
 		this.playerSession = new Map()
+	}
+
+	insertSession(session: Session) {
+		const id = session.getID()
+		if (this.sessions.has(id)) {
+			throw new Error(ErrSessionAlreadyExists)
+		}
+		this.insertPlayerSession(session)
+		this.sessions.set(id, session)
+	}
+
+	getSession(id: string) {
+		const s = this.sessions.get(id)
+		if (s === undefined) {
+			throw new Error(ErrSessionNotFound)
+		}
+		return s
+	}
+
+	deleteSession(id: string) {
+		const s = this.sessions.get(id)
+		if (s === undefined) {
+			throw new Error(ErrSessionNotFound)
+		}
+		this.deletePlayerSession(s)
+		this.sessions.delete(id)
 	}
 
 	insertPlayer(player: Player) {
@@ -68,7 +96,7 @@ class Index {
 		this.playerSession.set(newPlayer, s)
 	}
 
-	insertPlayerSession(session: Session) {
+	private insertPlayerSession(session: Session) {
 		const player = session.getPlayer()
 		const s = this.playerSession.get(player)
 		if (s === undefined) {
@@ -80,7 +108,7 @@ class Index {
 		this.playerSession.set(player, session)
 	}
 
-	deletePlayerSession(session: Session) {
+	private deletePlayerSession(session: Session) {
 		const player = session.getPlayer()
 		const s = this.playerSession.get(player)
 		if (s === undefined) {
@@ -94,11 +122,9 @@ class Index {
 }
 
 export class Repository {
-	private readonly sessions: Map<string, Session>
 	private readonly index: Index
 
 	constructor() {
-		this.sessions = new Map()
 		this.index = new Index()
 	}
 
@@ -109,28 +135,14 @@ export class Repository {
 	insert(session: Session) {
 		const id = crypto.randomUUID()
 		session.setID(id)
-
-		if (this.sessions.has(id)) {
-			throw new Error(ErrSessionAlreadyExists)
-		}
-		this.index.insertPlayerSession(session)
-		this.sessions.set(id, session)
+		this.index.insertSession(session)
 	}
 
 	get(id: string): Session {
-		const s = this.sessions.get(id)
-		if (s === undefined) {
-			throw new Error(ErrSessionNotFound)
-		}
-		return s
+		return this.index.getSession(id)
 	}
 
 	delete(id: string) {
-		const s = this.sessions.get(id)
-		if (s === undefined) {
-			throw new Error(ErrSessionNotFound)
-		}
-		this.index.deletePlayerSession(s)
-		this.sessions.delete(id)
+		return this.index.deleteSession(id)
 	}
 }

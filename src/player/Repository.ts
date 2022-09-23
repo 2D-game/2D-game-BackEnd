@@ -1,50 +1,65 @@
 import { Player } from './Player'
 import * as crypto from 'crypto'
-import { IIndex, Indexes } from '../repository'
+import { Indexes } from '../repository'
 
 const ErrPlayerAlreadyExists = 'Player already exists'
 const ErrPlayerNotFound = 'Player not found'
 
-export class Repository {
+class Index {
 	private readonly players: Map<string, Player>
-	private readonly indexes: Indexes<Player>
+	private readonly childIndexes: Indexes<Player>
 
-	constructor() {
+	constructor(childIndexes: Indexes<Player>) {
 		this.players = new Map()
-		this.indexes = new Indexes()
+		this.childIndexes = childIndexes
 	}
 
-	addIndex(index: IIndex<Player>): this {
-		this.indexes.add(index)
-		return this
+	insertPlayer(player: Player) {
+		const id = player.getID()
+		if (this.players.has(id)) {
+			throw new Error(ErrPlayerAlreadyExists)
+		}
+		this.childIndexes.onInsert(player)
+		this.players.set(id, player)
+	}
+
+	deletePlayer(id: string) {
+		const p = this.players.get(id)
+		if (p === undefined) {
+			throw new Error(ErrPlayerNotFound)
+		}
+		this.childIndexes.onDelete(p)
+		this.players.delete(id)
+	}
+
+	updatePlayer(id: string, newPlayer: Player) {
+		const p = this.players.get(id)
+		if (p === undefined) {
+			throw new Error(ErrPlayerNotFound)
+		}
+		this.childIndexes.onUpdate(p, newPlayer)
+		this.players.set(id, newPlayer)
+	}
+}
+
+export class Repository {
+	private readonly index: Index
+
+	constructor(childIndexes: Indexes<Player>) {
+		this.index = new Index(childIndexes)
 	}
 
 	insert(player: Player) {
 		const id = crypto.randomUUID()
 		player.setID(id)
-
-		if (this.players.has(id)) {
-			throw new Error(ErrPlayerAlreadyExists)
-		}
-		this.indexes.onInsert(player)
-		this.players.set(id, player)
+		this.index.insertPlayer(player)
 	}
 
 	delete(id: string) {
-		const p = this.players.get(id)
-		if (p === undefined) {
-			throw new Error(ErrPlayerNotFound)
-		}
-		this.indexes.onDelete(p)
-		this.players.delete(id)
+		return this.index.deletePlayer(id)
 	}
 
 	update(id: string, newPlayer: Player) {
-		const p = this.players.get(id)
-		if (p === undefined) {
-			throw new Error(ErrPlayerNotFound)
-		}
-		this.indexes.onUpdate(p, newPlayer)
-		this.players.set(id, newPlayer)
+		return this.index.updatePlayer(id, newPlayer)
 	}
 }

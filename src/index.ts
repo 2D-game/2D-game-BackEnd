@@ -7,6 +7,7 @@ import * as lobby from './lobby'
 import * as game from './game'
 import * as player from './player'
 import * as server from './server'
+import { Indexes } from './repository'
 
 const app = express()
 const httpServer = http.createServer(app)
@@ -24,11 +25,12 @@ const gameRepo = new game.Repository()
 
 const lobbyRepo = new lobby.Repository()
 const lobbyEvBus = new lobby.EventBus()
-const playerRepo = new player.Repository()
-playerRepo
-	.addIndex(sessionRepo.getPlayerIndex())
-	.addIndex(lobbyRepo.getPlayerIndex())
-	.addIndex(gameRepo.getPlayerIndex())
+const playerRepo = new player.Repository(
+	new Indexes()
+		.add(sessionRepo.getPlayerIndex())
+		.add(lobbyRepo.getPlayerIndex())
+		.add(gameRepo.getPlayerIndex())
+)
 const playerEvBus = new player.EventBus()
 const playerUcase = new player.Usecase(playerRepo, sessionRepo, playerEvBus)
 const lobbyUcase = new lobby.Usecase(lobbyRepo, playerUcase, lobbyEvBus, playerEvBus)

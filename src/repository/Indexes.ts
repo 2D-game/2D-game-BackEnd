@@ -7,8 +7,9 @@ export class Indexes<Type> {
 		this.indexes = []
 	}
 
-	add(index: IIndex<Type>) {
+	add(index: IIndex<Type>): this {
 		this.indexes.push(index)
+		return this
 	}
 
 	onInsert(t: Type) {
