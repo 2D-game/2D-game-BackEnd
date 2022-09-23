@@ -7,7 +7,6 @@ import * as lobby from './lobby'
 import * as game from './game'
 import * as player from './player'
 import * as server from './server'
-import { Indexes } from './repository'
 
 const app = express()
 const httpServer = http.createServer(app)
@@ -18,26 +17,18 @@ const io = new SocketServer(httpServer, {
 	}
 })
 
-const sessionRepo = new session.Repository()
-const sessionUcase = new session.Usecase(sessionRepo)
+const sessions = new session.Sessions()
 
-const gameRepo = new game.Repository()
-
-const lobbyRepo = new lobby.Repository()
-const lobbyEvBus = new lobby.EventBus()
-const playerRepo = new player.Repository(
-	new Indexes()
-		.add(sessionRepo.getPlayerIndex())
-		.add(lobbyRepo.getPlayerIndex())
-		.add(gameRepo.getPlayerIndex())
-)
 const playerEvBus = new player.EventBus()
-const playerUcase = new player.Usecase(playerRepo, sessionRepo, playerEvBus)
-const lobbyUcase = new lobby.Usecase(lobbyRepo, playerUcase, lobbyEvBus, playerEvBus)
-const gameUcase = new game.Usecase(gameRepo, lobbyRepo, playerRepo)
+const lobbyEvBus = new lobby.EventBus()
 
-const lobbyHndFact = new lobby.HandlerFactory(io, lobbyUcase, sessionUcase, lobbyEvBus)
+const sessionUcase = new session.Usecase(sessions)
+const playerUcase = new player.Usecase(sessions, playerEvBus)
+const lobbyUcase = new lobby.Usecase(playerUcase, lobbyEvBus, playerEvBus)
+const gameUcase = new game.Usecase(playerEvBus)
+
 const playerHndFact = new player.HandlerFactory(playerUcase, sessionUcase, playerEvBus)
+const lobbyHndFact = new lobby.HandlerFactory(io, lobbyUcase, sessionUcase, lobbyEvBus)
 const gameHndFact = new game.HandlerFactory(gameUcase, sessionUcase)
 
 new server.Server(io)

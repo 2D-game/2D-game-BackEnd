@@ -1,34 +1,32 @@
-import { Game, Presenter, Repository as GameRepository } from './'
+import { Game, Presenter } from './'
+import { Event as PlayerEvent, EventBus as PlayerEventBus, Player } from '../player'
 import * as dto from './dto'
-import { Repository as LobbyRepository } from '../lobby'
-import { Repository as PlayerRepository } from '../player'
 import { Lobby } from '../lobby'
 import { Map } from '../map'
 
 export class Usecase {
-	private readonly gameRepo: GameRepository
-	private readonly lobbyRepo: LobbyRepository
-	private readonly playerRepo: PlayerRepository
 
-	constructor(gameRepo: GameRepository, lobbyRepo: LobbyRepository, playerRepo: PlayerRepository) {
-		this.gameRepo = gameRepo
-		this.lobbyRepo = lobbyRepo
-		this.playerRepo = playerRepo
+	constructor(playerEvBus: PlayerEventBus) {
+		playerEvBus.subscribe(PlayerEvent.PLAYER_DISCONNECTED, this.onPlayerDisconnect.bind(this))
 	}
 
 	start(lobby: Lobby): dto.StartRes {
 		const game = new Game(new Map(10, 10, { x: 1, y: 1 }))
-		this.gameRepo.insert(game)
 
-		this.lobbyRepo.getPlayers(lobby.getID()).forEach((player) => {
-			const newPlayer = player
-				.updateBuilder()
-				.setLobby(null)
-				.setGame(game)
-				.build()
-			this.playerRepo.update(player.getID(), newPlayer)
+		lobby.getPlayers().forEach(player => {
+			player.setLobby(null).setGame(game)
+			lobby.deletePlayer(player)
+			game.addPlayer(player)
 		})
 
 		return Presenter.getStartRes(game)
+	}
+
+	onPlayerDisconnect(player: Player) {
+		const game = player.getGame()
+		if (game === null) {
+			return
+		}
+		game.deletePlayer(player)
 	}
 }

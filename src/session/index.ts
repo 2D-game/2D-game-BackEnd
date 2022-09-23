@@ -1,3 +1,3 @@
 export * from './Session'
-export * from './Repository'
+export * from './Sessions'
 export * from './Usecase'

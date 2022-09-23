@@ -1,22 +1,16 @@
 import { Player } from '../player'
+import * as crypto from 'crypto'
 
 export class Session {
-	private id: string | null
+	private readonly id: string
 	private readonly player: Player
 
 	constructor(player: Player) {
-		this.id = null
+		this.id = crypto.randomUUID()
 		this.player = player
 	}
 
-	setID(id: string) {
-		this.id = id
-	}
-
 	getID(): string {
-		if (this.id === null) {
-			throw new Error('Session ID is not set')
-		}
 		return this.id
 	}
 
