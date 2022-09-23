@@ -8,3 +8,11 @@ export type StartRes = {
 		objects: Type[][]
 	}
 }
+
+// GetPlayers
+export type GetPlayersRes = {
+	users: {
+		id: string
+		username: string
+	}[]
+}

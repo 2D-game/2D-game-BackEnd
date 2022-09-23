@@ -6,11 +6,7 @@ import { IHandler, IHandlerFactory } from '../server'
 import { Server as IOServer } from 'socket.io'
 
 const ErrNotInLobby = 'Not in lobby'
-const ErrAlreadyInLobby = 'Already in lobby'
-
-function getLobbyRoom(lobby: Lobby) {
-	return `lobby:${lobby.getID()}`
-}
+const ErrAlreadyInLobbyOrGame = 'Already in lobby or game'
 
 export class HandlerFactory extends IHandlerFactory {
 	private readonly io: IOServer
@@ -37,8 +33,8 @@ export class HandlerFactory extends IHandlerFactory {
 	private onPlayerListChange(lobby: Lobby) {
 		const res = ExtendedSocket.response(this.lobbyUcase.getPlayers(lobby))
 		this.io
-			.to(getLobbyRoom(lobby))
-			.emit('player_list', res)
+			.to(lobby.getID())
+			.emit('lobby_player_list', res)
 	}
 }
 
@@ -57,7 +53,7 @@ export class Handler implements IHandler {
 		const socket = this.socket
 		socket.on('create_lobby', socket.wrapErrHandler(this.onCreateLobby.bind(this)))
 		socket.on('join_lobby', socket.wrapErrHandler(this.onJoinLobby.bind(this)))
-		socket.on('player_list', socket.wrapErrHandler(this.onPlayerList.bind(this)))
+		socket.on('lobby_player_list', socket.wrapErrHandler(this.onPlayerList.bind(this)))
 	}
 
 	private joinLobby(ev: string, session: Session, res: dto.CreateRes | dto.JoinRes) {
@@ -68,18 +64,18 @@ export class Handler implements IHandler {
 
 		this.sessionUcase.setSession(this.socket, session)
 		this.socket.emit(ev, res)
-		this.socket.join(getLobbyRoom(lobby))
+		this.socket.join(lobby.getID())
 	}
 
 	private onCreateLobby(ev: string, req: dto.CreateReq) {
-		this.sessionUcase.notAuthGuard(this.socket, ErrAlreadyInLobby)
+		this.sessionUcase.notAuthGuard(this.socket, ErrAlreadyInLobbyOrGame)
 
 		const [ss, res] = this.lobbyUcase.create(req)
 		this.joinLobby(ev, ss, res)
 	}
 
 	private onJoinLobby(ev: string, req: dto.JoinReq) {
-		this.sessionUcase.notAuthGuard(this.socket, ErrAlreadyInLobby)
+		this.sessionUcase.notAuthGuard(this.socket, ErrAlreadyInLobbyOrGame)
 
 		const [ss, res] = this.lobbyUcase.join(req)
 		this.joinLobby(ev, ss, res)

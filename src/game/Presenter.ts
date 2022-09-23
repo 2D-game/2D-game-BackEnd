@@ -1,5 +1,6 @@
 import * as dto from './dto'
 import { Game } from './'
+import { Player } from '../player'
 
 export class Presenter {
 	static getStartRes(game: Game): dto.StartRes {
@@ -20,6 +21,15 @@ export class Presenter {
 				width: map.getWidth(),
 				objects: objects
 			}
+		}
+	}
+
+	static getPlayerRes(players: Set<Player>): dto.GetPlayersRes {
+		return {
+			users: [...players].map(player => ({
+				id: player.getID(),
+				username: player.getUsername()
+			}))
 		}
 	}
 }

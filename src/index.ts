@@ -18,18 +18,20 @@ const io = new SocketServer(httpServer, {
 })
 
 const sessions = new session.Sessions()
+const lobbies = new lobby.Lobbies()
 
 const playerEvBus = new player.EventBus()
 const lobbyEvBus = new lobby.EventBus()
+const gameEvBus = new game.EventBus()
 
 const sessionUcase = new session.Usecase(sessions)
 const playerUcase = new player.Usecase(sessions, playerEvBus)
-const lobbyUcase = new lobby.Usecase(playerUcase, lobbyEvBus, playerEvBus)
-const gameUcase = new game.Usecase(playerEvBus)
+const lobbyUcase = new lobby.Usecase(lobbies, playerUcase, lobbyEvBus, playerEvBus)
+const gameUcase = new game.Usecase(lobbies, gameEvBus, playerEvBus)
 
 const playerHndFact = new player.HandlerFactory(playerUcase, sessionUcase, playerEvBus)
 const lobbyHndFact = new lobby.HandlerFactory(io, lobbyUcase, sessionUcase, lobbyEvBus)
-const gameHndFact = new game.HandlerFactory(gameUcase, sessionUcase)
+const gameHndFact = new game.HandlerFactory(io, gameUcase, sessionUcase, gameEvBus)
 
 new server.Server(io)
 	.addHandlerFactory(lobbyHndFact)

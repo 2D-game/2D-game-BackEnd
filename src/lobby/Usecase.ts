@@ -9,8 +9,8 @@ export class Usecase {
 	private readonly playerUcase: PlayerUsecase
 	private readonly lobbyEvBus: LobbyEventBus
 
-	constructor(playerUcase: PlayerUsecase, lobbyEvBus: LobbyEventBus, playerEvBus: PlayerEventBus) {
-		this.lobbies = new Lobbies()
+	constructor(lobbies: Lobbies, playerUcase: PlayerUsecase, lobbyEvBus: LobbyEventBus, playerEvBus: PlayerEventBus) {
+		this.lobbies = lobbies
 		this.playerUcase = playerUcase
 		this.lobbyEvBus = lobbyEvBus
 
