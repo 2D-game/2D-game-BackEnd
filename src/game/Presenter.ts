@@ -11,7 +11,11 @@ export class Presenter {
 		for (let i = 0; i < height; i++) {
 			objects[i] = new Array(width)
 			for (let j = 0; j < width; j++) {
-				objects[i][j] = map.getObjectAt(j, i).getType()
+				const obj = map.getObjectAt({ x: j, y: i })
+				if (obj === null) {
+					continue
+				}
+				objects[i][j] = obj.getType()
 			}
 		}
 

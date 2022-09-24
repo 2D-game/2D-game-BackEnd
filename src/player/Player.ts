@@ -1,18 +1,23 @@
 import { Lobby } from '../lobby'
 import { Game } from '../game'
 import * as crypto from 'crypto'
+import { Coordinates } from '../map'
+
+const ErrPlayerIsNotSpawned = 'Player is not spawned yet'
 
 export class Player {
-	protected id: string
-	protected readonly username: string
-	protected lobby: Lobby | null
-	protected game: Game | null
+	private readonly id: string
+	private readonly username: string
+	private lobby: Lobby | null
+	private game: Game | null
+	private coords: Coordinates | null
 
 	constructor(username: string, lobby: Lobby | null = null) {
 		this.id = crypto.randomUUID()
 		this.username = username
 		this.lobby = lobby
 		this.game = null
+		this.coords = null
 	}
 
 	getID(): string {
@@ -38,6 +43,18 @@ export class Player {
 
 	setGame(game: Game | null): Player {
 		this.game = game
+		return this
+	}
+
+	getCoords(): Coordinates {
+		if (this.coords === null) {
+			throw new Error(ErrPlayerIsNotSpawned)
+		}
+		return this.coords
+	}
+
+	setCoords(coords: Coordinates): Player {
+		this.coords = coords
 		return this
 	}
 }

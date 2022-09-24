@@ -17,14 +17,18 @@ export class Usecase {
 	}
 
 	start(lobby: Lobby): dto.StartRes {
+		const spawnPoint = { x: 1, y: 1 }
 		const game = new Game(
 			lobby.getID(),
-			new Map(10, 10, { x: 1, y: 1 })
+			new Map(10, 10, spawnPoint)
 				.addWallOutline()
 		)
 
 		lobby.getPlayers().forEach(player => {
-			player.setLobby(null).setGame(game)
+			player
+				.setLobby(null)
+				.setGame(game)
+				.setCoords(spawnPoint)
 			lobby.deletePlayer(player)
 			game.addPlayer(player)
 		})

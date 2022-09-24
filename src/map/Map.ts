@@ -1,10 +1,12 @@
 import { IObject, NullObject } from '../object'
 import { Wall } from '../object/wall/Wall'
 
-export type SpawnPoint = {
+export type Coordinates = {
 	x: number
 	y: number
 }
+
+export type SpawnPoint = Coordinates
 
 export class Map {
 	private readonly height: number
@@ -38,7 +40,11 @@ export class Map {
 		return this.spawnPoint
 	}
 
-	getObjectAt(x: number, y: number): IObject {
+	getObjectAt(coords: Coordinates): IObject | null {
+		const { x, y } = coords
+		if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
+			return null
+		}
 		return this.objects[y][x]
 	}
 
