@@ -1,10 +1,10 @@
 import * as dto from './dto'
 import { Game } from './'
+import { Map } from '../map'
 import { Player } from '../player'
 
 export class Presenter {
-	static getStartRes(game: Game): dto.StartRes {
-		const map = game.getMap()
+	private static formatMap(map: Map): dto.Map {
 		const height = map.getHeight()
 		const width = map.getWidth()
 		const objects = new Array(height)
@@ -16,12 +16,16 @@ export class Presenter {
 		}
 
 		return {
-			map: {
-				height: map.getHeight(),
-				width: map.getWidth(),
-				spawnPoint: map.getSpawnPoint(),
-				objects: objects
-			}
+			height: map.getHeight(),
+			width: map.getWidth(),
+			spawnPoint: map.getSpawnPoint(),
+			objects: objects
+		}
+	}
+
+	static getStartRes(game: Game): dto.StartRes {
+		return {
+			map: this.formatMap(game.getMap())
 		}
 	}
 
