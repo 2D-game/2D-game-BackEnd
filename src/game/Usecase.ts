@@ -16,7 +16,11 @@ export class Usecase {
 		playerEvBus.subscribe(PlayerEvent.PLAYER_DISCONNECTED, this.onPlayerDisconnect.bind(this))
 	}
 
-	start(lobby: Lobby): dto.StartRes {
+	start(lobby: Lobby): [boolean, dto.StartRes | null] {
+		if (lobby.getPlayers().size < 2 || !lobby.allPlayersReady()) {
+			return [false, null]
+		}
+
 		const spawnPoint = { x: 1, y: 1 }
 		const game = new Game(
 			lobby.getID(),
@@ -35,7 +39,7 @@ export class Usecase {
 		this.lobbies.delete(lobby.getID())
 		this.gameEvBus.publish(GameEvent.PLAYER_LIST_CHANGE, game)
 
-		return Presenter.getStartRes(game)
+		return [true, Presenter.getStartRes(game)]
 	}
 
 	getPlayers(game: Game): dto.GetPlayersRes {

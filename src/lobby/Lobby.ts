@@ -29,5 +29,9 @@ export class Lobby {
 	deletePlayer(player: Player): void {
 		this.players.delete(player)
 	}
+
+	allPlayersReady(): boolean {
+		return [...this.players].every(player => player.isReady())
+	}
 }
 

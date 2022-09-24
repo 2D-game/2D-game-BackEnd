@@ -4,7 +4,9 @@ import { Session } from '../session'
 import { Lobby } from '../lobby'
 import { Sessions } from '../session'
 
-const ErrPlayerNotInGame = 'Player not in game'
+const ErrNotInGame = 'Not in game'
+const ErrNotInLobby = 'Not in lobby'
+const ErrAlreadyInGame = 'Already in game'
 
 export class Usecase {
 	private readonly sessions: Sessions
@@ -30,7 +32,7 @@ export class Usecase {
 
 		const game = player.getGame()
 		if (game === null) {
-			throw new Error(ErrPlayerNotInGame)
+			throw new Error(ErrNotInGame)
 		}
 
 		let { x, y } = player.getCoords()
@@ -57,6 +59,17 @@ export class Usecase {
 		}
 
 		return Presenter.getMoveRes(player)
+	}
+
+	setReady(player: Player): dto.SetReadyRes {
+		if (player.getLobby() === null) {
+			throw new Error(ErrNotInLobby)
+		} else if (player.getGame() !== null) {
+			throw new Error(ErrAlreadyInGame)
+		}
+		player.setReady()
+		this.evBus.publish(Event.PLAYER_READY, player)
+		return { id: player.getID() }
 	}
 
 	disconnect(session: Session) {

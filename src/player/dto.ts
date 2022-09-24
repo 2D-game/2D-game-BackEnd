@@ -18,3 +18,8 @@ export type MoveRes = {
 	id: string
 	coords: Coordinates
 }
+
+// SetReady
+export type SetReadyRes = {
+	id: string
+}

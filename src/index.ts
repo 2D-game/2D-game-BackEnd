@@ -30,7 +30,7 @@ const lobbyUcase = new lobby.Usecase(lobbies, playerUcase, lobbyEvBus, playerEvB
 const gameUcase = new game.Usecase(lobbies, gameEvBus, playerEvBus)
 
 const playerHndFact = new player.HandlerFactory(io, playerUcase, sessionUcase, playerEvBus)
-const lobbyHndFact = new lobby.HandlerFactory(io, lobbyUcase, sessionUcase, lobbyEvBus)
+const lobbyHndFact = new lobby.HandlerFactory(io, lobbyUcase, gameUcase, sessionUcase, lobbyEvBus)
 const gameHndFact = new game.HandlerFactory(io, gameUcase, sessionUcase, gameEvBus)
 
 new server.Server(io)

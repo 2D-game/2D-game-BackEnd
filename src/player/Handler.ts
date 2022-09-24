@@ -40,10 +40,11 @@ export class Handler implements IHandler {
 	public registerListeners() {
 		const socket = this.socket
 		socket.on('move', socket.wrapErrHandler(this.onMove.bind(this)))
+		socket.on('set_ready', socket.wrapErrHandler(this.onSetReady.bind(this)))
 		socket.underlying().on('disconnect', this.onDisconnect.bind(this))
 	}
 
-	public onMove(_ev: string, req: dto.MoveReq) {
+	public onMove(ev: string, req: dto.MoveReq) {
 		const s = this.sessionUcase.authGuard(this.socket)
 		const player = s.getPlayer()
 
@@ -54,7 +55,21 @@ export class Handler implements IHandler {
 		}
 		this.io
 			.to(game.getID())
-			.emit('move', ExtendedSocket.response(res))
+			.emit(ev, ExtendedSocket.response(res))
+	}
+
+	public onSetReady(ev: string) {
+		const s = this.sessionUcase.authGuard(this.socket)
+		const player = s.getPlayer()
+
+		const res = this.playerUcase.setReady(player)
+		const lobby = player.getLobby()
+		if (lobby === null) {
+			return
+		}
+		this.io
+			.to(lobby.getID())
+			.emit(ev, ExtendedSocket.response(res))
 	}
 
 	public onDisconnect() {

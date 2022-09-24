@@ -4,9 +4,7 @@ import { Usecase as SessionUsecase } from '../session'
 import { IHandler, IHandlerFactory } from '../server'
 import { Server as IOServer } from 'socket.io'
 
-const ErrNotInLobby = 'Not in lobby'
 const ErrNotInGame = 'Not in game'
-const ErrAlreadyInGame = 'Already in game'
 
 export class HandlerFactory extends IHandlerFactory {
 	private readonly io: IOServer
@@ -53,24 +51,7 @@ export class Handler implements IHandler {
 
 	public registerListeners() {
 		const socket = this.socket
-		socket.on('start_game', socket.wrapErrHandler(this.onStartGame.bind(this)))
 		socket.on('game_player_list', socket.wrapErrHandler(this.onPlayerList.bind(this)))
-	}
-
-	private onStartGame(ev: string) {
-		const s = this.sessionUcase.authGuard(this.socket, ErrNotInLobby)
-		const lobby = s.getPlayer().getLobby()
-		if (lobby === null) {
-			throw new Error(ErrNotInLobby)
-		}
-		if (s.getPlayer().getGame() !== null) {
-			throw new Error(ErrAlreadyInGame)
-		}
-
-		const res = this.gameUcase.start(lobby)
-		this.io
-			.to(lobby.getID())
-			.emit(ev, res)
 	}
 
 	private onPlayerList(ev: string) {

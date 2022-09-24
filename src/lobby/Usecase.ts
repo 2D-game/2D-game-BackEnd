@@ -15,6 +15,7 @@ export class Usecase {
 		this.lobbyEvBus = lobbyEvBus
 
 		playerEvBus.subscribe(PlayerEvent.PLAYER_CREATED, this.onPlayerConnect.bind(this))
+		playerEvBus.subscribe(PlayerEvent.PLAYER_READY, this.onPlayerReady.bind(this))
 		playerEvBus.subscribe(PlayerEvent.PLAYER_DISCONNECTED, this.onPlayerDisconnect.bind(this))
 	}
 
@@ -55,6 +56,15 @@ export class Usecase {
 		this.lobbyEvBus.publish(LobbyEvent.PLAYER_LIST_CHANGE, lobby)
 	}
 
+	onPlayerReady(player: Player) {
+		const lobby = player.getLobby()
+		if (lobby === null) {
+			return
+		}
+
+		this.lobbyEvBus.publish(LobbyEvent.PLAYER_READINESS_CHANGE, lobby)
+	}
+
 	onPlayerDisconnect(player: Player) {
 		const lobby = player.getLobby()
 		if (lobby === null) {
@@ -66,6 +76,7 @@ export class Usecase {
 			this.lobbies.delete(lobby.getID())
 		} else {
 			this.lobbyEvBus.publish(LobbyEvent.PLAYER_LIST_CHANGE, lobby)
+			this.lobbyEvBus.publish(LobbyEvent.PLAYER_READINESS_CHANGE, lobby)
 		}
 	}
 }

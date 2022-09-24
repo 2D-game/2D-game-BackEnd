@@ -10,6 +10,7 @@ export class Player {
 	private readonly username: string
 	private lobby: Lobby | null
 	private game: Game | null
+	private ready: boolean
 	private coords: Coordinates | null
 
 	constructor(username: string, lobby: Lobby | null = null) {
@@ -17,6 +18,7 @@ export class Player {
 		this.username = username
 		this.lobby = lobby
 		this.game = null
+		this.ready = false
 		this.coords = null
 	}
 
@@ -43,6 +45,15 @@ export class Player {
 
 	setGame(game: Game | null): Player {
 		this.game = game
+		return this
+	}
+
+	isReady(): boolean {
+		return this.ready
+	}
+
+	setReady(): Player {
+		this.ready = true
 		return this
 	}
 
