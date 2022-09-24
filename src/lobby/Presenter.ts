@@ -6,7 +6,8 @@ export class Presenter {
 		return {
 			users: [...players].map(player => ({
 				id: player.getID(),
-				username: player.getUsername()
+				username: player.getUsername(),
+				ready: player.isReady()
 			}))
 		}
 	}
