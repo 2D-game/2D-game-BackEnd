@@ -33,11 +33,12 @@ export class Presenter {
 		}
 	}
 
-	static getPlayerRes(players: Set<Player>): dto.GetPlayersRes {
+	static getPlayersRes(players: Set<Player>): dto.GetPlayersRes {
 		return {
 			users: [...players].map(player => ({
 				id: player.getID(),
-				username: player.getUsername()
+				username: player.getUsername(),
+				coords: player.getCoords()
 			}))
 		}
 	}

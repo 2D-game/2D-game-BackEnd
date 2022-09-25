@@ -43,7 +43,7 @@ export class Usecase {
 	}
 
 	getPlayers(game: Game): dto.GetPlayersRes {
-		return Presenter.getPlayerRes(game.getPlayers())
+		return Presenter.getPlayersRes(game.getPlayers())
 	}
 
 	onPlayerDisconnect(player: Player) {

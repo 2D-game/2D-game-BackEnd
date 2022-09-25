@@ -1,6 +1,6 @@
 // Start
 import { Type } from '../object'
-import { SpawnPoint } from '../map'
+import { Coordinates, SpawnPoint } from '../map'
 
 export type Map = {
 	height: number
@@ -18,5 +18,6 @@ export type GetPlayersRes = {
 	users: {
 		id: string
 		username: string
+		coords: Coordinates
 	}[]
 }
