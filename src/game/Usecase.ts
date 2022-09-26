@@ -24,7 +24,7 @@ export class Usecase {
 		const spawnPoint = { x: 1, y: 1 }
 		const game = new Game(
 			lobby.getID(),
-			new Map(10, 10, spawnPoint)
+			new Map(10, 20, spawnPoint)
 				.addWallOutline()
 		)
 
