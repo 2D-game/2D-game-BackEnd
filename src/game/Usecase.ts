@@ -17,7 +17,7 @@ export class Usecase {
 	}
 
 	start(lobby: Lobby): [boolean, dto.StartRes | null] {
-		if (lobby.getPlayers().size < 2 || !lobby.allPlayersReady()) {
+		if (lobby.getPlayers().size < 1 || !lobby.allPlayersReady()) {
 			return [false, null]
 		}
 
