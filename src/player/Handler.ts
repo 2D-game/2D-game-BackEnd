@@ -1,5 +1,5 @@
 import { IHandler, IHandlerFactory } from '../server'
-import { EventBus, Usecase as PlayerUsecase } from './'
+import { Usecase as PlayerUsecase } from './'
 import * as dto from './'
 import { Usecase as SessionUsecase } from '../session'
 import { ExtendedSocket } from '../util/Socket'
@@ -9,14 +9,12 @@ export class HandlerFactory extends IHandlerFactory {
 	private readonly io: IOServer
 	private readonly playerUcase: PlayerUsecase
 	private readonly sessionUcase: SessionUsecase
-	private readonly evBus: EventBus
 
-	constructor(io: IOServer, playerUcase: PlayerUsecase, sessionUcase: SessionUsecase, evBus: EventBus) {
+	constructor(io: IOServer, playerUcase: PlayerUsecase, sessionUcase: SessionUsecase) {
 		super()
 		this.io = io
 		this.playerUcase = playerUcase
 		this.sessionUcase = sessionUcase
-		this.evBus = evBus
 	}
 
 	create(socket: ExtendedSocket) {

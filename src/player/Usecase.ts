@@ -1,4 +1,4 @@
-import { Player, Event, EventBus, Presenter } from './'
+import { Player, Event, Publisher, Presenter } from './'
 import * as dto from './'
 import { Session } from '../session'
 import { Lobby } from '../lobby'
@@ -10,11 +10,11 @@ const ErrAlreadyInGame = 'Already in game'
 
 export class Usecase {
 	private readonly sessions: Sessions
-	private readonly evBus: EventBus
+	private readonly pub: Publisher
 
-	constructor(sessions: Sessions, evBus: EventBus) {
+	constructor(sessions: Sessions, pub: Publisher) {
 		this.sessions = sessions
-		this.evBus = evBus
+		this.pub = pub
 	}
 
 	create(username: string, lobby: Lobby): Session {
@@ -23,7 +23,7 @@ export class Usecase {
 		const session = new Session(player)
 		this.sessions.add(session)
 
-		this.evBus.publish(Event.PLAYER_CREATED, player)
+		this.pub.publish(Event.PLAYER_CREATED, player)
 		return session
 	}
 
@@ -68,12 +68,12 @@ export class Usecase {
 			throw new Error(ErrAlreadyInGame)
 		}
 		player.setReady()
-		this.evBus.publish(Event.PLAYER_READY, player)
+		this.pub.publish(Event.PLAYER_READY, player)
 		return { id: player.getID() }
 	}
 
 	disconnect(session: Session) {
 		this.sessions.delete(session.getID())
-		this.evBus.publish(Event.PLAYER_DISCONNECTED, session.getPlayer())
+		this.pub.publish(Event.PLAYER_DISCONNECTED, session.getPlayer())
 	}
 }

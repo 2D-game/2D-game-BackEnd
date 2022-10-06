@@ -1,5 +1,5 @@
 export * from './Player'
-export * from './EventBus'
+export * from './Publisher'
 export * from './dto'
 export * from './Usecase'
 export * from './Presenter'

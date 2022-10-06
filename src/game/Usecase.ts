@@ -1,5 +1,5 @@
-import { Game, Presenter, Event as GameEvent, EventBus as GameEventBus } from './'
-import { Event as PlayerEvent, EventBus as PlayerEventBus, Player } from '../player'
+import { Game, Presenter, Event, Publisher } from './'
+import { Player } from '../player'
 import * as dto from './dto'
 import { Lobby } from '../lobby'
 import { Map } from '../map'
@@ -7,13 +7,11 @@ import { Lobbies } from '../lobby'
 
 export class Usecase {
 	private readonly lobbies: Lobbies
-	private readonly gameEvBus: GameEventBus
+	private readonly pub: Publisher
 
-	constructor(lobbies: Lobbies, gameEvBus: GameEventBus, playerEvBus: PlayerEventBus) {
+	constructor(lobbies: Lobbies, pub: Publisher) {
 		this.lobbies = lobbies
-		this.gameEvBus = gameEvBus
-
-		playerEvBus.subscribe(PlayerEvent.PLAYER_DISCONNECTED, this.onPlayerDisconnect.bind(this))
+		this.pub = pub
 	}
 
 	start(lobby: Lobby): [boolean, dto.StartRes | null] {
@@ -37,7 +35,7 @@ export class Usecase {
 			game.addPlayer(player)
 		})
 		this.lobbies.delete(lobby.getID())
-		this.gameEvBus.publish(GameEvent.PLAYER_LIST_CHANGE, game)
+		this.pub.publish(Event.PLAYER_LIST_CHANGE, game)
 
 		return [true, Presenter.getStartRes(game)]
 	}
@@ -46,13 +44,13 @@ export class Usecase {
 		return Presenter.getPlayersRes(game.getPlayers())
 	}
 
-	onPlayerDisconnect(player: Player) {
+	deletePlayer(player: Player) {
 		const game = player.getGame()
 		if (game === null) {
 			return
 		}
 		game.deletePlayer(player)
 
-		this.gameEvBus.publish(GameEvent.PLAYER_LIST_CHANGE, game)
+		this.pub.publish(Event.PLAYER_LIST_CHANGE, game)
 	}
 }
