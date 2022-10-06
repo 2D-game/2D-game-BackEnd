@@ -1,55 +1,24 @@
 import { ExtendedSocket } from '../util/Socket'
-import { EventBus, Event, Lobby, Usecase as LobbyUsecase } from './'
+import { Usecase as LobbyUsecase } from './'
 import { Session, Usecase as SessionUsecase } from '../session'
 import * as dto from './dto'
 import { IHandler, IHandlerFactory } from '../server'
-import { Server as IOServer } from 'socket.io'
-import { Usecase as GameUsecase } from '../game'
 
 const ErrNotInLobby = 'Not in lobby'
 const ErrAlreadyInLobbyOrGame = 'Already in lobby or game'
 
 export class HandlerFactory extends IHandlerFactory {
-	private readonly io: IOServer
 	private readonly lobbyUcase: LobbyUsecase
-	private readonly gameUcase: GameUsecase
 	private readonly sessionUcase: SessionUsecase
-	private readonly evBus: EventBus
 
-	constructor(io: IOServer, lobbyUcase: LobbyUsecase, gameUcase: GameUsecase, sessionUcase: SessionUsecase, evBus: EventBus) {
+	constructor(lobbyUcase: LobbyUsecase, sessionUcase: SessionUsecase) {
 		super()
-		this.io = io
 		this.lobbyUcase = lobbyUcase
-		this.gameUcase = gameUcase
 		this.sessionUcase = sessionUcase
-		this.evBus = evBus
 	}
 
 	create(socket: ExtendedSocket) {
 		return new Handler(socket, this.lobbyUcase, this.sessionUcase)
-	}
-
-	registerListeners() {
-		this.evBus.subscribe(Event.PLAYER_LIST_CHANGE, this.onPlayerListChange.bind(this))
-		this.evBus.subscribe(Event.PLAYER_READINESS_CHANGE, this.onPlayerReadinessChange.bind(this))
-	}
-
-	private onPlayerListChange(lobby: Lobby) {
-		const res = ExtendedSocket.response(this.lobbyUcase.getPlayers(lobby))
-		this.io
-			.to(lobby.getID())
-			.emit('lobby_player_list', res)
-	}
-
-	private onPlayerReadinessChange(lobby: Lobby) {
-		const [started, res] = this.gameUcase.start(lobby)
-		if (!started || res === null) {
-			return
-		}
-
-		this.io
-			.to(lobby.getID())
-			.emit('start_game', ExtendedSocket.response(res))
 	}
 }
 

@@ -1,49 +1,31 @@
 import { ExtendedSocket } from '../util/Socket'
-import { Event, EventBus, Game, Usecase as GameUsecase } from './'
+import { Usecase as GameUsecase } from './'
 import { Usecase as SessionUsecase } from '../session'
 import { IHandler, IHandlerFactory } from '../server'
-import { Server as IOServer } from 'socket.io'
 
 const ErrNotInGame = 'Not in game'
 
 export class HandlerFactory extends IHandlerFactory {
-	private readonly io: IOServer
 	private readonly gameUcase: GameUsecase
 	private readonly sessionUcase: SessionUsecase
-	private readonly evBus: EventBus
 
-	constructor(io: IOServer, gameUcase: GameUsecase, sessionUcase: SessionUsecase, evBus: EventBus) {
+	constructor(gameUcase: GameUsecase, sessionUcase: SessionUsecase) {
 		super()
-		this.io = io
 		this.gameUcase = gameUcase
 		this.sessionUcase = sessionUcase
-		this.evBus = evBus
 	}
 
 	create(socket: ExtendedSocket) {
-		return new Handler(this.io, socket, this.gameUcase, this.sessionUcase)
-	}
-
-	registerListeners() {
-		this.evBus.subscribe(Event.PLAYER_LIST_CHANGE, this.onPlayerListChange.bind(this))
-	}
-
-	private onPlayerListChange(game: Game) {
-		const res = ExtendedSocket.response(this.gameUcase.getPlayers(game))
-		this.io
-			.to(game.getID())
-			.emit('game_player_list', res)
+		return new Handler(socket, this.gameUcase, this.sessionUcase)
 	}
 }
 
 export class Handler implements IHandler {
-	private readonly io: IOServer
 	private readonly socket: ExtendedSocket
 	private readonly gameUcase: GameUsecase
 	private readonly sessionUcase: SessionUsecase
 
-	constructor(io: IOServer, socket: ExtendedSocket, gameUcase: GameUsecase, sessionUcase: SessionUsecase) {
-		this.io = io
+	constructor(socket: ExtendedSocket, gameUcase: GameUsecase, sessionUcase: SessionUsecase) {
 		this.socket = socket
 		this.gameUcase = gameUcase
 		this.sessionUcase = sessionUcase

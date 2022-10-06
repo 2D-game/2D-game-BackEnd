@@ -1,5 +1,5 @@
-import { Event as LobbyEvent, EventBus as LobbyEventBus, Lobby, Presenter } from './'
-import { Event as PlayerEvent, EventBus as PlayerEventBus, Player, Usecase as PlayerUsecase } from '../player'
+import { Event, Publisher, Lobby, Presenter } from './'
+import { Player, Usecase as PlayerUsecase } from '../player'
 import * as dto from './dto'
 import { Session } from '../session'
 import { Lobbies } from './Lobbies'
@@ -7,16 +7,12 @@ import { Lobbies } from './Lobbies'
 export class Usecase {
 	private readonly lobbies: Lobbies
 	private readonly playerUcase: PlayerUsecase
-	private readonly lobbyEvBus: LobbyEventBus
+	private readonly pub: Publisher
 
-	constructor(lobbies: Lobbies, playerUcase: PlayerUsecase, lobbyEvBus: LobbyEventBus, playerEvBus: PlayerEventBus) {
+	constructor(lobbies: Lobbies, playerUcase: PlayerUsecase, pub: Publisher) {
 		this.lobbies = lobbies
 		this.playerUcase = playerUcase
-		this.lobbyEvBus = lobbyEvBus
-
-		playerEvBus.subscribe(PlayerEvent.PLAYER_CREATED, this.onPlayerConnect.bind(this))
-		playerEvBus.subscribe(PlayerEvent.PLAYER_READY, this.onPlayerReady.bind(this))
-		playerEvBus.subscribe(PlayerEvent.PLAYER_DISCONNECTED, this.onPlayerDisconnect.bind(this))
+		this.pub = pub
 	}
 
 	create(req: dto.CreateReq): [Session, dto.CreateRes] {
@@ -46,26 +42,26 @@ export class Usecase {
 		return Presenter.getPlayerRes(lobby.getPlayers())
 	}
 
-	onPlayerConnect(player: Player) {
+	addPlayer(player: Player) {
 		const lobby = player.getLobby()
 		if (lobby === null) {
 			return
 		}
 		lobby.addPlayer(player)
 
-		this.lobbyEvBus.publish(LobbyEvent.PLAYER_LIST_CHANGE, lobby)
+		this.pub.publish(Event.PLAYER_LIST_CHANGE, lobby)
 	}
 
-	onPlayerReady(player: Player) {
+	playerIsReady(player: Player) {
 		const lobby = player.getLobby()
 		if (lobby === null) {
 			return
 		}
 
-		this.lobbyEvBus.publish(LobbyEvent.PLAYER_READINESS_CHANGE, lobby)
+		this.pub.publish(Event.PLAYER_READINESS_CHANGE, lobby)
 	}
 
-	onPlayerDisconnect(player: Player) {
+	deletePlayer(player: Player) {
 		const lobby = player.getLobby()
 		if (lobby === null) {
 			return
@@ -75,8 +71,8 @@ export class Usecase {
 		if (lobby.playerCount() === 0) {
 			this.lobbies.delete(lobby.getID())
 		} else {
-			this.lobbyEvBus.publish(LobbyEvent.PLAYER_LIST_CHANGE, lobby)
-			this.lobbyEvBus.publish(LobbyEvent.PLAYER_READINESS_CHANGE, lobby)
+			this.pub.publish(Event.PLAYER_LIST_CHANGE, lobby)
+			this.pub.publish(Event.PLAYER_READINESS_CHANGE, lobby)
 		}
 	}
 }

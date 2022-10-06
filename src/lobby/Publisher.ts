@@ -1,4 +1,4 @@
-import { EventBus as AEventBus } from '../util/EventBus'
+import { IPublisher } from '../util/Observer'
 import { Lobby } from './Lobby'
 
 export enum Event {
@@ -6,7 +6,7 @@ export enum Event {
 	PLAYER_READINESS_CHANGE = 'PLAYER_READINESS_CHANGE'
 }
 
-export class EventBus extends AEventBus<Event, Lobby> {
+export class Publisher extends IPublisher<Event, Lobby> {
 	constructor() {
 		super()
 	}
