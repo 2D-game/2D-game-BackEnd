@@ -53,7 +53,7 @@ export class PlayerObserver implements IObserver {
 		this.playerPub.unsubscribe(PlayerEv.PLAYER_DISCONNECTED, this.onPlayerDisconnect.bind(this))
 	}
 
-	onPlayerDisconnect(player: Player) {
+	private onPlayerDisconnect(player: Player) {
 		this.ucase.deletePlayer(player)
 	}
 }

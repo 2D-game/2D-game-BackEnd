@@ -52,15 +52,15 @@ export class PlayerObserver implements IObserver {
 		this.playerPub.unsubscribe(PlayerEv.PLAYER_DISCONNECTED, this.onPlayerDisconnect.bind(this))
 	}
 
-	onPlayerConnect(player: Player) {
+	private onPlayerConnect(player: Player) {
 		this.ucase.addPlayer(player)
 	}
 
-	onPlayerReady(player: Player) {
+	private onPlayerReady(player: Player) {
 		this.ucase.playerIsReady(player)
 	}
 
-	onPlayerDisconnect(player: Player) {
+	private onPlayerDisconnect(player: Player) {
 		this.ucase.deletePlayer(player)
 	}
 }
