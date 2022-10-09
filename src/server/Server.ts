@@ -3,7 +3,10 @@ import { ExtendedSocket } from '../util/Socket'
 
 export abstract class IHandlerFactory {
 	abstract create(socket: ExtendedSocket): IHandler
-	registerListeners() {}
+	registerListeners(socket: ExtendedSocket) {
+		const handler = this.create(socket)
+		handler.registerListeners()
+	}
 }
 
 export interface IHandler {
@@ -25,10 +28,9 @@ export class Server {
 	}
 
 	registerListeners() {
-		this.factories.forEach(factory => factory.registerListeners())
 		this.io.on('connection', (socket) => {
 			const ext = new ExtendedSocket(socket)
-			this.factories.forEach((factory) => factory.create(ext).registerListeners())
+			this.factories.forEach((factory) => factory.registerListeners(ext))
 		})
 	}
 }
