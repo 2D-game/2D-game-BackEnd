@@ -8,7 +8,7 @@ export type Coordinates = {
 
 export type SpawnPoint = Coordinates
 
-export class Map {
+export class Map implements Cloneable {
 	private readonly height: number
 	private readonly width: number
 	private readonly spawnPoint: SpawnPoint
@@ -48,14 +48,36 @@ export class Map {
 		return this.objects[y][x]
 	}
 
+	setObjectAt(coords : Coordinates, object : IObject) : void {
+		const { x, y } = coords
+		if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
+			return;
+		}
+		this.objects[y][x] = object;
+	}
+
 	public addWallOutline(): this {
+		let wall = new Wall();
 		for (let i = 0; i < this.height; i++) {
 			for (let j = 0; j < this.width; j++) {
 				if (i === 0 || i === this.height - 1 || j === 0 || j === this.width - 1) {
-					this.objects[i][j] = new Wall()
+					this.objects[i][j] = wall
 				}
 			}
 		}
 		return this
+	}
+
+	public clone(): Map {
+		let map = new Map(this.height, this.width, this.spawnPoint);
+
+		for (let i = 0; i < this.height; i++) {
+			map.objects[i] = new Array(this.height);
+			for (let j = 0; j < this.width; j++) {
+				map.objects[i][j] = this.objects[i][j];
+			}
+		}
+
+		return map;
 	}
 }

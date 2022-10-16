@@ -1,0 +1,3 @@
+interface Cloneable {
+    clone: () => Cloneable;
+}

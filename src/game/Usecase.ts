@@ -1,17 +1,22 @@
 import { Game, Presenter, Event, Publisher } from './'
-import { Player } from '../player'
+import { Direction, Player } from '../player'
 import * as dto from './dto'
 import { Lobby } from '../lobby'
 import { Map } from '../map'
 import { Lobbies } from '../lobby'
+import { Director } from '../map/Builders/Director'
 
 export class Usecase {
 	private readonly lobbies: Lobbies
 	private readonly pub: Publisher
+	private readonly maps: Array<Map>
 
 	constructor(lobbies: Lobbies, pub: Publisher) {
 		this.lobbies = lobbies
 		this.pub = pub
+		this.maps = [new Map(10, 20, { x: 1, y: 1 })
+				.addWallOutline(), new Map(20, 20, { x: 10, y: 10 })
+				.addWallOutline()]
 	}
 
 	start(lobby: Lobby): [boolean, dto.StartRes | null] {
@@ -19,18 +24,16 @@ export class Usecase {
 			return [false, null]
 		}
 
-		const spawnPoint = { x: 1, y: 1 }
 		const game = new Game(
 			lobby.getID(),
-			new Map(10, 20, spawnPoint)
-				.addWallOutline()
+			Director.CreateMap1(this.maps[0])
 		)
 
 		lobby.getPlayers().forEach(player => {
 			player
 				.setLobby(null)
 				.setGame(game)
-				.setCoords(spawnPoint)
+				.setCoords(this.maps[0].getSpawnPoint())
 			lobby.deletePlayer(player)
 			game.addPlayer(player)
 		})

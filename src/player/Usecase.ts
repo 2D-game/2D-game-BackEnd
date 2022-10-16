@@ -3,6 +3,7 @@ import * as dto from './'
 import { Session } from '../session'
 import { Lobby } from '../lobby'
 import { Sessions } from '../session'
+import { Type } from '../object'
 
 const ErrNotInGame = 'Not in game'
 const ErrNotInLobby = 'Not in lobby'
@@ -56,6 +57,10 @@ export class Usecase {
 		const obj = game.getMap().getObjectAt(newCoords)
 		if (obj !== null && !obj.isSolid()) {
 			player.setCoords(newCoords)
+		}
+
+		if (obj !== null && (obj.getType() === Type.WATER || obj.getType() === Type.LAVA)) {
+			player.setCoords(game.getMap().getSpawnPoint());
 		}
 
 		return Presenter.getMoveRes(player)
