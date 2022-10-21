@@ -2,7 +2,8 @@ export enum Type {
 	NULL = 'NULL',
 	WALL = 'WALL',
 	LAVA = 'LAVA',
-	WATER = 'WATER'
+	WATER = 'WATER',
+	FINISH = 'FINISH'
 }
 
 export interface IObject {

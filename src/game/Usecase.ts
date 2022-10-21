@@ -14,8 +14,8 @@ export class Usecase {
 	constructor(lobbies: Lobbies, pub: Publisher) {
 		this.lobbies = lobbies
 		this.pub = pub
-		this.maps = [new Map(10, 20, { x: 1, y: 1 })
-				.addWallOutline(), new Map(20, 20, { x: 10, y: 10 })
+		this.maps = [new Map(10, 20, { x: 1, y: 1 }, {x: 1, y: 18})
+				.addWallOutline(), new Map(15, 20, { x: 1, y: 13 }, {x: 13, y: 18})
 				.addWallOutline()]
 	}
 
@@ -26,14 +26,14 @@ export class Usecase {
 
 		const game = new Game(
 			lobby.getID(),
-			Director.CreateMap1(this.maps[0])
+			Director.CreateMap2(this.maps[1])
 		)
 
 		lobby.getPlayers().forEach(player => {
 			player
 				.setLobby(null)
 				.setGame(game)
-				.setCoords(this.maps[0].getSpawnPoint())
+				.setCoords(this.maps[1].getSpawnPoint())
 			lobby.deletePlayer(player)
 			game.addPlayer(player)
 		})

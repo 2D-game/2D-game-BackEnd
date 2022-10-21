@@ -1,4 +1,5 @@
 import { IObject, NullObject } from '../object'
+import { Finish } from '../object/Finish'
 import { Wall } from '../object/wall/Wall'
 
 export type Coordinates = {
@@ -12,12 +13,14 @@ export class Map implements Cloneable {
 	private readonly height: number
 	private readonly width: number
 	private readonly spawnPoint: SpawnPoint
+	private readonly finishPoint : Coordinates
 	private readonly objects: IObject[][]
 
-	constructor(height: number, width: number, spawnPoint: SpawnPoint) {
+	constructor(height: number, width: number, spawnPoint: SpawnPoint, finishPoint : Coordinates) {
 		this.height = height
 		this.width = width
 		this.spawnPoint = spawnPoint
+		this.finishPoint = finishPoint
 
 		this.objects = new Array(height)
 		for (let i = 0; i < height; i++) {
@@ -26,6 +29,8 @@ export class Map implements Cloneable {
 				this.objects[i][j] = new NullObject()
 			}
 		}
+
+		this.objects[finishPoint.x][finishPoint.y] = new Finish();
 	}
 
 	getHeight(): number {
@@ -69,7 +74,7 @@ export class Map implements Cloneable {
 	}
 
 	public clone(): Map {
-		let map = new Map(this.height, this.width, this.spawnPoint);
+		let map = new Map(this.height, this.width, this.spawnPoint, this.finishPoint);
 
 		for (let i = 0; i < this.height; i++) {
 			map.objects[i] = new Array(this.height);
