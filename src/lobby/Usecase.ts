@@ -81,10 +81,4 @@ export class Usecase {
       this.pub.publish(Event.PLAYER_READINESS_CHANGE, lobby);
     }
   }
-
-  finishLevel(player: Player) {
-    const finishedLevel = player.getLevel();
-    player.setLevel(finishedLevel + 1);
-    player.getGame()?.getMap;
-  }
 }

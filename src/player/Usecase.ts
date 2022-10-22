@@ -1,9 +1,12 @@
-import { Player, Event, Publisher, Presenter } from "./";
+import { formatMap } from "./../util/helper";
+import { Player, Event, Publisher, Presenter, MoveRes } from "./";
 import * as dto from "./";
 import { Session } from "../session";
 import { Lobby } from "../lobby";
 import { Sessions } from "../session";
 import { Type } from "../object";
+import { Director } from "../map/Builders/Director";
+import { Map } from "../map";
 
 const ErrNotInGame = "Not in game";
 const ErrNotInLobby = "Not in lobby";
@@ -28,7 +31,7 @@ export class Usecase {
     return session;
   }
 
-  move(player: Player, req: dto.MoveReq): dto.MoveRes | dto.LevelChangeRes {
+  move(player: Player, req: dto.MoveReq): dto.MoveRes {
     dto.MoveReq.parse(req);
 
     const game = player.getGame();
@@ -54,20 +57,26 @@ export class Usecase {
     }
     const newCoords = { x, y };
 
-    const obj = game.getMap().getObjectAt(newCoords);
+    const obj = game.getMap(player.getLevel()).getObjectAt(newCoords);
 
     if (obj !== null) {
       if (obj.getType() == Type.FINISH) {
-        this.pub.publish(Event.PLAYER_FINISHED, player);
+        player.incrementLevel();
 
-        // TODO: update below
-        player.setCoords(game.getMap().getSpawnPoint());
+        const finishedResponse: MoveRes = {
+          id: player.getID(),
+          level: player.getLevel(),
+          coords: game.getMap(player.getLevel()).getSpawnPoint(),
+          map: formatMap(game.getMap(player.getLevel())),
+          userName: player.getUsername(),
+        };
+        player.setCoords(game.getMap(player.getLevel()).getSpawnPoint());
 
-        return Presenter.getMoveRes(player);
+        return finishedResponse;
       } else if (!obj.isSolid()) {
         player.setCoords(newCoords);
       } else if (obj.getType() === Type.WATER || obj.getType() === Type.LAVA) {
-        player.setCoords(game.getMap().getSpawnPoint());
+        player.setCoords(game.getMap(player.getLevel()).getSpawnPoint());
       }
     }
 

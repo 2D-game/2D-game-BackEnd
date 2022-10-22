@@ -59,10 +59,6 @@ export class PlayerObserver implements IObserver {
       PlayerEv.PLAYER_DISCONNECTED,
       this.onPlayerDisconnect.bind(this)
     );
-    this.playerPub.subscribe(
-      PlayerEv.PLAYER_FINISHED,
-      this.onPlayerFinish.bind(this)
-    );
   }
 
   stop() {
@@ -78,10 +74,6 @@ export class PlayerObserver implements IObserver {
       PlayerEv.PLAYER_DISCONNECTED,
       this.onPlayerDisconnect.bind(this)
     );
-    this.playerPub.unsubscribe(
-      PlayerEv.PLAYER_FINISHED,
-      this.onPlayerFinish.bind(this)
-    );
   }
 
   private onPlayerConnect(player: Player) {
@@ -94,9 +86,5 @@ export class PlayerObserver implements IObserver {
 
   private onPlayerDisconnect(player: Player) {
     this.ucase.deletePlayer(player);
-  }
-
-  private onPlayerFinish(player: Player) {
-    this.ucase.finishLevel(player);
   }
 }

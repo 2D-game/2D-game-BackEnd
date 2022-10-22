@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Coordinates } from "../map";
-import { Map } from "../game";
-// src\player\dto.ts
+import * as dto from "../game";
+
 // Move
 export enum Direction {
   UP = "UP",
@@ -19,13 +19,8 @@ export type MoveRes = {
   id: string;
   level: number;
   coords: Coordinates;
-  map?: Map;
-};
-
-export type LevelChangeRes = {
-  id: string;
-  level: number;
-  coords: Coordinates;
+  map?: dto.Map;
+  userName?: string;
 };
 
 // SetReady

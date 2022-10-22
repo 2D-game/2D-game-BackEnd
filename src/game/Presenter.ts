@@ -29,7 +29,7 @@ export class Presenter {
 
   static getStartRes(game: Game): dto.StartRes {
     return {
-      map: this.formatMap(game.getMap()),
+      map: this.formatMap(game.getMap(0)),
     };
   }
 

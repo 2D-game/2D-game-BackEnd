@@ -25,7 +25,12 @@ export class Usecase {
       return [false, null];
     }
 
-    const game = new Game(lobby.getID(), Director.CreateMap1(this.maps[1]));
+    const firstMap = Director.CreateMap1(this.maps[1]);
+    const secondMap = Director.CreateMap2(this.maps[1]);
+
+    const maps = [firstMap, secondMap];
+
+    const game = new Game(lobby.getID(), maps);
 
     lobby.getPlayers().forEach((player) => {
       player

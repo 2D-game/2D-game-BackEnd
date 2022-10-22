@@ -21,7 +21,7 @@ export class Player {
     this.game = null;
     this.ready = false;
     this.coords = null;
-    this.level = 1;
+    this.level = 0;
   }
 
   getID(): string {
@@ -78,5 +78,9 @@ export class Player {
   setLevel(level: number): Player {
     this.level = level;
     return this;
+  }
+
+  incrementLevel() {
+    this.level++;
   }
 }

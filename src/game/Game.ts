@@ -4,12 +4,12 @@ import { Player } from "../player";
 export class Game {
   private readonly id: string;
   private readonly players: Set<Player>;
-  private readonly map: Map;
+  private readonly maps: Map[];
 
-  constructor(id: string, map: Map) {
+  constructor(id: string, maps: Map[]) {
     this.id = id;
     this.players = new Set();
-    this.map = map;
+    this.maps = maps;
   }
 
   getID(): string {
@@ -28,7 +28,7 @@ export class Game {
     this.players.delete(player);
   }
 
-  getMap(): Map {
-    return this.map;
+  getMap(level: number): Map {
+    return this.maps[level];
   }
 }
