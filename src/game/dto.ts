@@ -1,23 +1,24 @@
 // Start
-import { Type } from '../object'
-import { Coordinates, SpawnPoint } from '../map'
+import { Type } from "../object";
+import { Coordinates, SpawnPoint } from "../map";
 
 export type Map = {
-	height: number
-	width: number
-	spawnPoint: SpawnPoint
-	objects: Type[][]
-}
+  height: number;
+  width: number;
+  spawnPoint: SpawnPoint;
+  objects: Type[][];
+};
 
 export type StartRes = {
-	map: Map
-}
+  map: Map;
+};
 
 // GetPlayers
 export type GetPlayersRes = {
-	users: {
-		id: string
-		username: string
-		coords: Coordinates
-	}[]
-}
+  users: {
+    id: string;
+    username: string;
+    level: number;
+    coords: Coordinates;
+  }[];
+};
