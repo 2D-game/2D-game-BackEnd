@@ -62,17 +62,13 @@ export class Usecase {
     if (obj !== null) {
       if (obj.getType() == Type.FINISH) {
         player.incrementLevel();
-
-        const finishedResponse: MoveRes = {
-          id: player.getID(),
-          level: player.getLevel(),
-          coords: game.getMap(player.getLevel()).getSpawnPoint(),
-          map: formatMap(game.getMap(player.getLevel())),
-          userName: player.getUsername(),
-        };
         player.setCoords(game.getMap(player.getLevel()).getSpawnPoint());
 
-        return finishedResponse;
+        return Presenter.getLevelChangeRes(
+          player,
+          game,
+          formatMap(game.getMap(player.getLevel()))
+        );
       } else if (!obj.isSolid()) {
         player.setCoords(newCoords);
       } else if (obj.getType() === Type.WATER || obj.getType() === Type.LAVA) {
