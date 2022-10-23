@@ -1,6 +1,7 @@
 // Start
 import { Type } from "../object";
 import { Coordinates, SpawnPoint } from "../map";
+import { LevelResponse } from "../level/Level";
 
 export type Map = {
   height: number;
@@ -11,6 +12,7 @@ export type Map = {
 
 export type StartRes = {
   map: Map;
+  colors?: LevelResponse;
 };
 
 // GetPlayers

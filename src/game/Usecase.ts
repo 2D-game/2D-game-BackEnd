@@ -1,5 +1,6 @@
+import { Levels } from "./../level/Level";
 import { Game, Presenter, Event, Publisher } from "./";
-import { Direction, Player } from "../player";
+import { Player } from "../player";
 import * as dto from "./dto";
 import { Lobby } from "../lobby";
 import { Map } from "../map";
@@ -43,7 +44,7 @@ export class Usecase {
     this.lobbies.delete(lobby.getID());
     this.pub.publish(Event.PLAYER_LIST_CHANGE, game);
 
-    return [true, Presenter.getStartRes(game)];
+    return [true, Presenter.getStartRes(game, Levels[0])];
   }
 
   getPlayers(game: Game): dto.GetPlayersRes {

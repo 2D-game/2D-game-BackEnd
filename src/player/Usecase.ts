@@ -1,3 +1,4 @@
+import { Levels } from "./../level/Level";
 import { formatMap } from "./../util/helper";
 import { Player, Event, Publisher, Presenter, MoveRes } from "./";
 import * as dto from "./";
@@ -67,7 +68,8 @@ export class Usecase {
         return Presenter.getLevelChangeRes(
           player,
           game,
-          formatMap(game.getMap(player.getLevel()))
+          formatMap(game.getMap(player.getLevel())),
+          Levels[player.getLevel()]
         );
       } else if (!obj.isSolid()) {
         player.setCoords(newCoords);

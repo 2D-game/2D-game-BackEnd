@@ -1,61 +1,73 @@
-import { GrayGround, GreenGround, Ground, WhiteGround } from "./Ground";
-import { Player, PurplePlayer, RedPlayer, YellowPlayer } from "./Player";
+import { LightCoralLava, RedLava, Lava, ColarLava } from "./Lava";
+import { Water, DarkBlueWater, BlueWater, DodgerBlueWater } from "./Water";
 import { BlackWall, BlueWall, BrownWall, Wall } from "./Wall";
 
 export interface Level {
-  createGround(): Ground;
+  createLava(): Lava;
   createWall(): Wall;
-  createPlayer(): Player;
+  createWater(): Water;
 }
 
-class FirstLevel implements Level {
-  public createGround(): Ground {
-    return new WhiteGround();
+export class FirstLevel implements Level {
+  public createLava(): Lava {
+    return new ColarLava();
   }
 
   public createWall(): Wall {
     return new BlackWall();
   }
 
-  public createPlayer(): Player {
-    return new RedPlayer();
+  public createWater(): Water {
+    return new BlueWater();
   }
 }
 
-class SecondLevel implements Level {
-  public createGround(): Ground {
-    return new GrayGround();
+export class SecondLevel implements Level {
+  public createLava(): Lava {
+    return new LightCoralLava();
   }
 
   public createWall(): Wall {
     return new BrownWall();
   }
 
-  public createPlayer(): Player {
-    return new YellowPlayer();
+  public createWater(): Water {
+    return new DodgerBlueWater();
   }
 }
 
-class ThirdLevel implements Level {
-  public createGround(): Ground {
-    return new GreenGround();
+export class ThirdLevel implements Level {
+  public createLava(): Lava {
+    return new RedLava();
   }
 
   public createWall(): Wall {
     return new BlueWall();
   }
 
-  public createPlayer(): Player {
-    return new PurplePlayer();
+  public createWater(): Water {
+    return new DarkBlueWater();
   }
 }
 
-function clientCode(factory: Level) {
-  const ground = factory.createGround();
-  const wall = factory.createWall();
-  const player = factory.createPlayer();
-
-  console.log("Ground color: ", ground.getColor());
-  console.log("Wall color: ", wall.getColor());
-  console.log("Player color: ", player.getColor());
+export interface LevelResponse {
+  lava: string;
+  wall: string;
+  water: string;
 }
+
+export const createLevel = (factory: Level): LevelResponse => {
+  const response: LevelResponse = {
+    lava: factory.createLava().getColor(),
+    wall: factory.createWall().getColor(),
+    water: factory.createWater().getColor(),
+  };
+
+  return response;
+};
+
+export const Levels: Level[] = [
+  new ThirdLevel(),
+  new SecondLevel(),
+  new ThirdLevel(),
+];

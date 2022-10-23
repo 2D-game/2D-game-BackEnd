@@ -1,3 +1,4 @@
+import { createLevel, Level } from "./../level/Level";
 import * as dto from "./dto";
 import { Game } from "./";
 import { Map } from "../map";
@@ -27,9 +28,10 @@ export class Presenter {
     };
   }
 
-  static getStartRes(game: Game): dto.StartRes {
+  static getStartRes(game: Game, level: Level): dto.StartRes {
     return {
       map: this.formatMap(game.getMap(0)),
+      colors: createLevel(level),
     };
   }
 

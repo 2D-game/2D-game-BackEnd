@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { Coordinates } from "../map";
 import * as dto from "../game";
+import { LevelResponse } from "../level/Level";
 
 // Move
 export enum Direction {
@@ -21,6 +22,7 @@ export type MoveRes = {
   coords: Coordinates;
   map?: dto.Map;
   userName?: string;
+  colors?: LevelResponse;
 };
 
 // SetReady
