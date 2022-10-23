@@ -67,7 +67,7 @@ export const createLevel = (factory: Level): LevelResponse => {
 };
 
 export const Levels: Level[] = [
-  new ThirdLevel(),
+  new FirstLevel(),
   new SecondLevel(),
   new ThirdLevel(),
 ];
