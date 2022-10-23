@@ -26,7 +26,7 @@ export class Usecase {
       return [false, null];
     }
 
-    const firstMap = Director.CreateMap1(this.maps[1]);
+    const firstMap = Director.CreateMap1(this.maps[0]);
     const secondMap = Director.CreateMap2(this.maps[1]);
 
     const maps = [firstMap, secondMap];
@@ -37,7 +37,7 @@ export class Usecase {
       player
         .setLobby(null)
         .setGame(game)
-        .setCoords(this.maps[1].getSpawnPoint());
+        .setCoords(this.maps[0].getSpawnPoint());
       lobby.deletePlayer(player);
       game.addPlayer(player);
     });
