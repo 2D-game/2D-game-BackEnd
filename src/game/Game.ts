@@ -1,34 +1,34 @@
-import { Map } from '../map'
-import { Player } from '../player'
+import { Map } from "../map";
+import { Player } from "../player";
 
 export class Game {
-	private readonly id: string
-	private readonly players: Set<Player>
-	private readonly map: Map
+  private readonly id: string;
+  private readonly players: Set<Player>;
+  private readonly maps: Map[];
 
-	constructor(id: string, map: Map) {
-		this.id = id
-		this.players = new Set()
-		this.map = map
-	}
+  constructor(id: string, maps: Map[]) {
+    this.id = id;
+    this.players = new Set();
+    this.maps = maps;
+  }
 
-	getID(): string {
-		return this.id
-	}
+  getID(): string {
+    return this.id;
+  }
 
-	addPlayer(player: Player) {
-		this.players.add(player)
-	}
+  addPlayer(player: Player) {
+    this.players.add(player);
+  }
 
-	getPlayers(): Set<Player> {
-		return this.players
-	}
+  getPlayers(): Set<Player> {
+    return this.players;
+  }
 
-	deletePlayer(player: Player) {
-		this.players.delete(player)
-	}
+  deletePlayer(player: Player) {
+    this.players.delete(player);
+  }
 
-	getMap(): Map {
-		return this.map
-	}
+  getMap(level: number): Map {
+    return this.maps[level];
+  }
 }

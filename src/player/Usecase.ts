@@ -1,84 +1,99 @@
-import { Player, Event, Publisher, Presenter } from './'
-import * as dto from './'
-import { Session } from '../session'
-import { Lobby } from '../lobby'
-import { Sessions } from '../session'
-import { Type } from '../object'
+import { Levels } from "./../level/Level";
+import { formatMap } from "./../util/helper";
+import { Player, Event, Publisher, Presenter, MoveRes } from "./";
+import * as dto from "./";
+import { Session } from "../session";
+import { Lobby } from "../lobby";
+import { Sessions } from "../session";
+import { Type } from "../object";
+import { Director } from "../map/Builders/Director";
+import { Map } from "../map";
 
-const ErrNotInGame = 'Not in game'
-const ErrNotInLobby = 'Not in lobby'
-const ErrAlreadyInGame = 'Already in game'
+const ErrNotInGame = "Not in game";
+const ErrNotInLobby = "Not in lobby";
+const ErrAlreadyInGame = "Already in game";
 
 export class Usecase {
-	private readonly sessions: Sessions
-	private readonly pub: Publisher
+  private readonly sessions: Sessions;
+  private readonly pub: Publisher;
 
-	constructor(sessions: Sessions, pub: Publisher) {
-		this.sessions = sessions
-		this.pub = pub
-	}
+  constructor(sessions: Sessions, pub: Publisher) {
+    this.sessions = sessions;
+    this.pub = pub;
+  }
 
-	create(username: string, lobby: Lobby): Session {
-		const player = new Player(username, lobby)
+  create(username: string, lobby: Lobby): Session {
+    const player = new Player(username, lobby);
 
-		const session = new Session(player)
-		this.sessions.add(session)
+    const session = new Session(player);
+    this.sessions.add(session);
 
-		this.pub.publish(Event.PLAYER_CREATED, player)
-		return session
-	}
+    this.pub.publish(Event.PLAYER_CREATED, player);
+    return session;
+  }
 
-	move(player: Player, req: dto.MoveReq): dto.MoveRes {
-		dto.MoveReq.parse(req)
+  move(player: Player, req: dto.MoveReq): dto.MoveRes {
+    dto.MoveReq.parse(req);
 
-		const game = player.getGame()
-		if (game === null) {
-			throw new Error(ErrNotInGame)
-		}
+    const game = player.getGame();
+    if (game === null) {
+      throw new Error(ErrNotInGame);
+    }
 
-		let { x, y } = player.getCoords()
+    let { x, y } = player.getCoords();
 
-		switch (req.direction) {
-			case dto.Direction.UP:
-				y--
-				break
-			case dto.Direction.DOWN:
-				y++
-				break
-			case dto.Direction.LEFT:
-				x--
-				break
-			case dto.Direction.RIGHT:
-				x++
-				break
-		}
-		const newCoords = { x, y }
+    switch (req.direction) {
+      case dto.Direction.UP:
+        y--;
+        break;
+      case dto.Direction.DOWN:
+        y++;
+        break;
+      case dto.Direction.LEFT:
+        x--;
+        break;
+      case dto.Direction.RIGHT:
+        x++;
+        break;
+    }
+    const newCoords = { x, y };
 
-		const obj = game.getMap().getObjectAt(newCoords)
-		if (obj !== null && !obj.isSolid()) {
-			player.setCoords(newCoords)
-		}
+    const obj = game.getMap(player.getLevel()).getObjectAt(newCoords);
 
-		if (obj !== null && (obj.getType() === Type.WATER || obj.getType() === Type.LAVA)) {
-			player.setCoords(game.getMap().getSpawnPoint());
-		}
+    if (obj !== null) {
+      if (obj.getType() == Type.FINISH) {
+        player.incrementLevel();
+        player.setCoords(game.getMap(player.getLevel()).getSpawnPoint());
 
-		return Presenter.getMoveRes(player)
-	}
+        return Presenter.getLevelChangeRes(
+          player,
+          game,
+          formatMap(game.getMap(player.getLevel())),
+          Levels[player.getLevel()]
+        );
+      } else if (!obj.isSolid()) {
+        player.setCoords(newCoords);
+      } else if (obj.getType() === Type.WATER || obj.getType() === Type.LAVA) {
+        player.setCoords(game.getMap(player.getLevel()).getSpawnPoint());
+      }
+    }
 
-	setReady(player: Player): dto.SetReadyRes {
-		if (player.getLobby() === null) {
-			throw new Error(ErrNotInLobby)
-		} else if (player.getGame() !== null) {
-			throw new Error(ErrAlreadyInGame)
-		}
-		player.setReady()
-		this.pub.publish(Event.PLAYER_READY, player)
-		return { id: player.getID() }
-	}
+    return Presenter.getMoveRes(player);
+  }
 
-	disconnect(session: Session) {
-		this.sessions.delete(session.getID())
-		this.pub.publish(Event.PLAYER_DISCONNECTED, session.getPlayer())
-	}
+  setReady(player: Player): dto.SetReadyRes {
+    if (player.getLobby() === null) {
+      throw new Error(ErrNotInLobby);
+    } else if (player.getGame() !== null) {
+      throw new Error(ErrAlreadyInGame);
+    }
+    player.setReady();
+    this.pub.publish(Event.PLAYER_READY, player);
+    return { id: player.getID() };
+  }
+
+  disconnect(session: Session) {
+    this.sessions.delete(session.getID());
+    this.pub.publish(Event.PLAYER_DISCONNECTED, session.getPlayer());
+  }
 }
