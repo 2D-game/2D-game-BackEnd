@@ -1,14 +1,21 @@
 import { LightCoralLava, RedLava, Lava, ColarLava } from "./Lava";
 import { Water, DarkBlueWater, BlueWater, DodgerBlueWater } from "./Water";
 import { BlackWall, BlueWall, BrownWall, Wall } from "./Wall";
+import { FirstMap, MapDimensions, SecondMap, ThirdMap } from "./Map";
+import { Map } from "../map";
 
 export interface Level {
+  createMap(): MapDimensions;
   createLava(): Lava;
   createWall(): Wall;
   createWater(): Water;
 }
 
 export class FirstLevel implements Level {
+  public createMap(): MapDimensions {
+    return new FirstMap();
+  }
+
   public createLava(): Lava {
     return new ColarLava();
   }
@@ -23,6 +30,10 @@ export class FirstLevel implements Level {
 }
 
 export class SecondLevel implements Level {
+  public createMap(): MapDimensions {
+    return new SecondMap();
+  }
+
   public createLava(): Lava {
     return new LightCoralLava();
   }
@@ -37,6 +48,10 @@ export class SecondLevel implements Level {
 }
 
 export class ThirdLevel implements Level {
+  public createMap(): MapDimensions {
+    return new ThirdMap();
+  }
+
   public createLava(): Lava {
     return new RedLava();
   }
@@ -51,6 +66,7 @@ export class ThirdLevel implements Level {
 }
 
 export interface LevelResponse {
+  map: Map;
   lava: string;
   wall: string;
   water: string;
@@ -58,6 +74,7 @@ export interface LevelResponse {
 
 export const createLevel = (factory: Level): LevelResponse => {
   const response: LevelResponse = {
+    map: factory.createMap().getInitialData(),
     lava: factory.createLava().getColor(),
     wall: factory.createWall().getColor(),
     water: factory.createWater().getColor(),

@@ -10,15 +10,10 @@ import { Director } from "../map/Builders/Director";
 export class Usecase {
   private readonly lobbies: Lobbies;
   private readonly pub: Publisher;
-  private readonly maps: Array<Map>;
 
   constructor(lobbies: Lobbies, pub: Publisher) {
     this.lobbies = lobbies;
     this.pub = pub;
-    this.maps = [
-      new Map(10, 20, { x: 1, y: 1 }, { x: 1, y: 18 }).addWallOutline(),
-      new Map(15, 20, { x: 1, y: 13 }, { x: 13, y: 18 }).addWallOutline(),
-    ];
   }
 
   start(lobby: Lobby): [boolean, dto.StartRes | null] {
@@ -26,18 +21,19 @@ export class Usecase {
       return [false, null];
     }
 
-    const firstMap = Director.CreateMap1(this.maps[0]);
-    const secondMap = Director.CreateMap2(this.maps[1]);
+    const firstMap = Director.CreateMap1(
+      Levels[0].createMap().getInitialData()
+    );
+    const secondMap = Director.CreateMap2(
+      Levels[1].createMap().getInitialData()
+    );
 
     const maps = [firstMap, secondMap];
 
     const game = new Game(lobby.getID(), maps);
 
     lobby.getPlayers().forEach((player) => {
-      player
-        .setLobby(null)
-        .setGame(game)
-        .setCoords(this.maps[0].getSpawnPoint());
+      player.setLobby(null).setGame(game).setCoords(firstMap.getSpawnPoint());
       lobby.deletePlayer(player);
       game.addPlayer(player);
     });
