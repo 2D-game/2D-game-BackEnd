@@ -1,59 +1,53 @@
-import { Levels } from "./../level/Level";
-import { Game, Presenter, Event, Publisher } from "./";
-import { Player } from "../player";
-import * as dto from "./dto";
-import { Lobby } from "../lobby";
-import { Map } from "../map";
-import { Lobbies } from "../lobby";
-import { Director } from "../map/Builders/Director";
+import { Levels } from '../level/Level'
+import { Event, Game, Presenter, Publisher } from './'
+import { Player } from '../player'
+import * as dto from './dto'
+import { Lobbies, Lobby } from '../lobby'
+import { Director } from '../map/Builders/Director'
+import { Facade as LobbyFacade } from '../lobby/Facade'
 
 export class Usecase {
-  private readonly lobbies: Lobbies;
-  private readonly pub: Publisher;
+	private readonly lobbies: Lobbies
+	private readonly pub: Publisher
+	private readonly lobbyFacade: LobbyFacade
 
-  constructor(lobbies: Lobbies, pub: Publisher) {
-    this.lobbies = lobbies;
-    this.pub = pub;
-  }
+	constructor(lobbies: Lobbies, pub: Publisher, lobbyFacade: LobbyFacade) {
+		this.lobbies = lobbies
+		this.pub = pub
+		this.lobbyFacade = lobbyFacade
+	}
 
-  start(lobby: Lobby): [boolean, dto.StartRes | null] {
-    if (lobby.getPlayers().size < 2 || !lobby.allPlayersReady()) {
-      return [false, null];
-    }
+	start(lobby: Lobby): [boolean, dto.StartRes | null] {
+		if (lobby.getPlayers().size < 2 || !lobby.allPlayersReady()) {
+			return [false, null]
+		}
 
-    const firstMap = Director.CreateMap1(
-      Levels[0].createMap().getInitialData()
-    );
-    const secondMap = Director.CreateMap2(
-      Levels[1].createMap().getInitialData()
-    );
+		const firstMap = Director.CreateMap1(
+			Levels[0].createMap().getInitialData()
+		)
+		const secondMap = Director.CreateMap2(
+			Levels[1].createMap().getInitialData()
+		)
+		const maps = [firstMap, secondMap]
+		const game = new Game(lobby.getID(), maps)
 
-    const maps = [firstMap, secondMap];
+		this.lobbyFacade.movePlayersToGame(lobby, game)
+		this.pub.publish(Event.PLAYER_LIST_CHANGE, game)
 
-    const game = new Game(lobby.getID(), maps);
+		return [true, Presenter.getStartRes(game, Levels[0])]
+	}
 
-    lobby.getPlayers().forEach((player) => {
-      player.setLobby(null).setGame(game).setCoords(firstMap.getSpawnPoint());
-      lobby.deletePlayer(player);
-      game.addPlayer(player);
-    });
-    this.lobbies.delete(lobby.getID());
-    this.pub.publish(Event.PLAYER_LIST_CHANGE, game);
+	getPlayers(game: Game): dto.GetPlayersRes {
+		return Presenter.getPlayersRes(game.getPlayers())
+	}
 
-    return [true, Presenter.getStartRes(game, Levels[0])];
-  }
+	deletePlayer(player: Player) {
+		const game = player.getGame()
+		if (game === null) {
+			return
+		}
+		game.deletePlayer(player)
 
-  getPlayers(game: Game): dto.GetPlayersRes {
-    return Presenter.getPlayersRes(game.getPlayers());
-  }
-
-  deletePlayer(player: Player) {
-    const game = player.getGame();
-    if (game === null) {
-      return;
-    }
-    game.deletePlayer(player);
-
-    this.pub.publish(Event.PLAYER_LIST_CHANGE, game);
-  }
+		this.pub.publish(Event.PLAYER_LIST_CHANGE, game)
+	}
 }
