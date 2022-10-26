@@ -22,7 +22,7 @@ export type MoveRes = {
   won?: boolean;
   coords?: Coordinates;
   map?: dto.Map;
-  userName: string;
+  userName?: string;
   colors?: LevelResponse;
 };
 
