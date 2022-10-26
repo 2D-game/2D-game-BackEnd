@@ -12,9 +12,9 @@ export class Facade {
 		if (game === null) {
 			throw new Error(ErrNotInGame)
 		}
-		const level = player.getLevel()
 
 		player.incrementLevel()
+		const level = player.getLevel()
 		const spawnPoint = game.getMap(level).getSpawnPoint()
 		player.setCoords(spawnPoint)
 
