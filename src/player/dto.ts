@@ -18,10 +18,11 @@ export type MoveReq = z.infer<typeof MoveReq>;
 
 export type MoveRes = {
   id: string;
-  level: number;
-  coords: Coordinates;
+  level?: number;
+  won?: boolean;
+  coords?: Coordinates;
   map?: dto.Map;
-  userName?: string;
+  userName: string;
   colors?: LevelResponse;
 };
 

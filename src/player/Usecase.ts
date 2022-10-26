@@ -7,6 +7,7 @@ import { Type } from '../object'
 const ErrNotInGame = 'Not in game'
 const ErrNotInLobby = 'Not in lobby'
 const ErrAlreadyInGame = 'Already in game'
+const ErrAlreadyWon = 'Already won'
 
 export class Usecase {
 	private readonly sessions: Sessions
@@ -35,6 +36,8 @@ export class Usecase {
 		const game = player.getGame()
 		if (game === null) {
 			throw new Error(ErrNotInGame)
+		} else if (player.hasWon()) {
+			throw new Error(ErrAlreadyWon)
 		}
 
 		let { x, y } = player.getCoords()
