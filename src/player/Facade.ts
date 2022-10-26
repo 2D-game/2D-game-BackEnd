@@ -21,6 +21,7 @@ export class Facade {
 		const nextMap = game.getMap(nextLevel)
 
 		if (!nextMap || !Levels[nextLevel]) {
+			player.setWon()
 			return {
 				id: player.getID(),
 				userName: player.getUsername(),
