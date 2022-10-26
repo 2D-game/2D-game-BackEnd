@@ -25,10 +25,11 @@ const playerPub = new player.Publisher()
 const lobbyPub = new lobby.Publisher()
 const gamePub = new game.Publisher()
 
+const playerFacade = new player.Facade()
 const lobbyFacade = new lobby.Facade(lobbies)
 
 const sessionUcase = new session.Usecase(sessions)
-const playerUcase = new player.Usecase(sessions, playerPub)
+const playerUcase = new player.Usecase(sessions, playerPub, playerFacade)
 const lobbyUcase = new lobby.Usecase(lobbies, playerUcase, lobbyPub)
 const gameUcase = new game.Usecase(lobbies, gamePub, lobbyFacade)
 

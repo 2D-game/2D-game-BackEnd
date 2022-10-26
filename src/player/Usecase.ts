@@ -1,7 +1,5 @@
-import { Levels } from '../level/Level'
-import { formatMap } from '../util/helper'
 import * as dto from './'
-import { Event, Player, Presenter, Publisher } from './'
+import { Event, Facade, Player, Presenter, Publisher } from './'
 import { Session, Sessions } from '../session'
 import { Lobby } from '../lobby'
 import { Type } from '../object'
@@ -13,10 +11,12 @@ const ErrAlreadyInGame = 'Already in game'
 export class Usecase {
 	private readonly sessions: Sessions
 	private readonly pub: Publisher
+	private readonly facade: Facade
 
-	constructor(sessions: Sessions, pub: Publisher) {
+	constructor(sessions: Sessions, pub: Publisher, facade: Facade) {
 		this.sessions = sessions
 		this.pub = pub
+		this.facade = facade
 	}
 
 	create(username: string, lobby: Lobby): Session {
@@ -59,15 +59,7 @@ export class Usecase {
 
 		if (obj !== null) {
 			if (obj.getType() == Type.FINISH) {
-				player.incrementLevel()
-				player.setCoords(game.getMap(player.getLevel()).getSpawnPoint())
-
-				return Presenter.getLevelChangeRes(
-					player,
-					game,
-					formatMap(game.getMap(player.getLevel())),
-					Levels[player.getLevel()]
-				)
+				return this.facade.nextLevel(player)
 			} else if (!obj.isSolid()) {
 				player.setCoords(newCoords)
 			} else if (obj.getType() === Type.WATER || obj.getType() === Type.LAVA) {
@@ -76,6 +68,10 @@ export class Usecase {
 		}
 
 		return Presenter.getMoveRes(player)
+	}
+
+	forceNextLevel(player: Player): dto.MoveRes {
+		return this.facade.nextLevel(player)
 	}
 
 	setReady(player: Player): dto.SetReadyRes {
