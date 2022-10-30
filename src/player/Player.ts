@@ -99,9 +99,6 @@ export class Player {
 	}
 
 	addCommand(command : ICommand) {
-		console.log("New Command: " + command.constructor.name)
-		console.log("Coordinates: x:" + command.coordinates.x + ", y:" + command.coordinates.y)
-
 		this.commandHistory.push(command);
 	}
 
@@ -110,8 +107,6 @@ export class Player {
 
 		if (command !== undefined) {
 			command.undo()
-			console.log("Undo Command: " + command.constructor.name)
-			console.log("Coordinates: x:" + command.coordinates.x + ", y:" + command.coordinates.y)
 			return command.coordinates
 		}
 		
