@@ -2,6 +2,7 @@ import { Lobby } from '../lobby'
 import { Game } from '../game'
 import * as crypto from 'crypto'
 import { Coordinates } from '../map'
+import { ICommand } from './command/ICommand'
 
 const ErrPlayerIsNotSpawned = 'Player is not spawned yet'
 
@@ -14,6 +15,7 @@ export class Player {
 	private coords: Coordinates | null
 	private level: number
 	private won: boolean
+	private commandHistory: ICommand[]
 
 	constructor(username: string, lobby: Lobby | null = null) {
 		this.id = crypto.randomUUID()
@@ -24,6 +26,7 @@ export class Player {
 		this.coords = null
 		this.level = 0
 		this.won = false
+		this.commandHistory = []
 	}
 
 	getID(): string {
@@ -93,5 +96,29 @@ export class Player {
 
 	incrementLevel() {
 		this.level++
+	}
+
+	addCommand(command : ICommand) {
+		console.log("New Command: " + command.constructor.name)
+		console.log("Coordinates: x:" + command.coordinates.x + ", y:" + command.coordinates.y)
+
+		this.commandHistory.push(command);
+	}
+
+	undo(): Coordinates {
+		let command = this.commandHistory.pop()
+
+		if (command !== undefined) {
+			command.undo()
+			console.log("Undo Command: " + command.constructor.name)
+			console.log("Coordinates: x:" + command.coordinates.x + ", y:" + command.coordinates.y)
+			return command.coordinates
+		}
+		
+		return {x: -1, y: -1}
+	}
+
+	resetCommands() {
+		this.commandHistory = []
 	}
 }

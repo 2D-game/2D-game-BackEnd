@@ -17,6 +17,7 @@ export class Facade {
 		}
 
 		player.incrementLevel()
+		player.resetCommands()
 		const nextLevel = player.getLevel()
 		const nextMap = game.getMap(nextLevel)
 

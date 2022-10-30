@@ -3,6 +3,11 @@ import { Event, Facade, Player, Presenter, Publisher } from './'
 import { Session, Sessions } from '../session'
 import { Lobby } from '../lobby'
 import { Type } from '../object'
+import { ICommand } from './command/ICommand'
+import { MoveUpCommand } from './command/MoveUpCommand'
+import { MoveDownCommand } from './command/MoveDownCommand'
+import { MoveLeftCommand } from './command/MoveLeftCommand'
+import { MoveRightCommand } from './command/MoveRightCommand'
 
 const ErrNotInGame = 'Not in game'
 const ErrNotInLobby = 'Not in lobby'
@@ -42,18 +47,29 @@ export class Usecase {
 
 		let { x, y } = player.getCoords()
 
+		let command = null
+
 		switch (req.direction) {
 			case dto.Direction.UP:
 				y--
+				command = new MoveUpCommand({x, y})
 				break
 			case dto.Direction.DOWN:
 				y++
+				command = new MoveDownCommand({x, y})
 				break
 			case dto.Direction.LEFT:
 				x--
+				command = new MoveLeftCommand({x, y})
 				break
 			case dto.Direction.RIGHT:
 				x++
+				command = new MoveRightCommand({x, y})
+				break
+			case dto.Direction.UNDO:
+				let undoneCoords = player.undo()
+				x = undoneCoords.x
+				y = undoneCoords.y
 				break
 		}
 		const newCoords = { x, y }
@@ -64,8 +80,12 @@ export class Usecase {
 			if (obj.getType() == Type.FINISH) {
 				return this.facade.nextLevel(player)
 			} else if (!obj.isSolid()) {
+				if (command !== null)
+					player.addCommand(command)
 				player.setCoords(newCoords)
 			} else if (obj.getType() === Type.WATER || obj.getType() === Type.LAVA) {
+				if (command !== null)
+					player.addCommand(command)
 				player.setCoords(game.getMap(player.getLevel()).getSpawnPoint())
 			}
 		}
