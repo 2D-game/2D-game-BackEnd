@@ -9,7 +9,8 @@ export enum Direction {
   DOWN = "DOWN",
   LEFT = "LEFT",
   RIGHT = "RIGHT",
-  UNDO = "UNDO"
+  UNDO = "UNDO",
+  REDO = "REDO"
 }
 
 export const MoveReq = z.object({

@@ -4,6 +4,9 @@ import { Usecase as PlayerUsecase } from './'
 import { Usecase as SessionUsecase } from '../session'
 import { ExtendedSocket } from '../util/Socket'
 import { Server as IOServer } from 'socket.io'
+import { MoveCommand } from './command/MoveCommand'
+import { ICommand } from './command/ICommand'
+import { CommandHistory } from './command/CommandHistory'
 
 export class HandlerFactory extends IHandlerFactory {
 	private readonly io: IOServer
@@ -31,6 +34,7 @@ export class Handler implements IHandler {
 	private readonly socket: ExtendedSocket
 	private readonly playerUcase: PlayerUsecase
 	private readonly sessionUcase: SessionUsecase
+	private readonly commandHistory : CommandHistory
 
 	constructor(
 		io: IOServer,
@@ -42,6 +46,7 @@ export class Handler implements IHandler {
 		this.socket = socket
 		this.playerUcase = playerUcase
 		this.sessionUcase = sessionUcase
+		this.commandHistory = new CommandHistory()
 	}
 
 	public registerListeners() {
@@ -60,9 +65,26 @@ export class Handler implements IHandler {
 		if (game === null) {
 			return
 		}
-		const res = this.playerUcase.move(player, req)
 
-		this.io.to(game.getID()).emit(ev, ExtendedSocket.response(res))
+		dto.MoveReq.parse(req)
+
+		let res;
+
+		switch (req.direction) {
+			case dto.Direction.UNDO:
+				res = this.undo();
+				break;
+			case dto.Direction.REDO:
+				res = this.redoCommand();
+				break;
+			default:
+				res = this.executeCommand(new MoveCommand(this.playerUcase, player, req.direction))
+				break;
+		}
+
+		if (res !== undefined)
+			this.io.to(game.getID()).emit(ev, ExtendedSocket.response(res))
+
 	}
 
 	public onForceNextLevel(ev: string) {
@@ -96,5 +118,24 @@ export class Handler implements IHandler {
 			return
 		}
 		this.playerUcase.disconnect(ss)
+	}
+
+	public executeCommand(command : ICommand) : dto.MoveRes {
+		this.commandHistory.push(command)
+		return command.execute()
+	}
+
+	public redoCommand() : dto.MoveRes | undefined {
+		let command = this.commandHistory.peek()
+		if (command !== undefined)
+			return this.executeCommand(command)
+		return undefined
+	}
+
+	public undo() : dto.MoveRes | undefined {
+		let command = this.commandHistory.pop()
+		if (command !== undefined)
+			return command.undo()
+		return undefined
 	}
 }
