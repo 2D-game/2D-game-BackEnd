@@ -1,14 +1,15 @@
-import { LightCoralLava, RedLava, Lava, ColarLava } from "./Lava";
-import { Water, DarkBlueWater, BlueWater, DodgerBlueWater } from "./Water";
-import { BlackWall, BlueWall, BrownWall, Wall } from "./Wall";
+import { LightCoralLava, RedLava, ColarLava } from "./Lava";
+import { DarkBlueWater, BlueWater, DodgerBlueWater } from "./Water";
+import { BlackWall, BlueWall, BrownWall } from "./Wall";
 import { FirstMap, MapDimensions, SecondMap, ThirdMap } from "./Map";
 import { Map } from "../map";
+import { Trap } from "./bridge/Trap";
 
 export interface Level {
   createMap(): MapDimensions;
-  createLava(): Lava;
-  createWall(): Wall;
-  createWater(): Water;
+  createLava(): Trap;
+  createWall(): Trap;
+  createWater(): Trap;
 }
 
 export class FirstLevel implements Level {
@@ -16,15 +17,15 @@ export class FirstLevel implements Level {
     return new FirstMap();
   }
 
-  public createLava(): Lava {
+  public createLava(): Trap {
     return new ColarLava();
   }
 
-  public createWall(): Wall {
+  public createWall(): Trap {
     return new BlackWall();
   }
 
-  public createWater(): Water {
+  public createWater(): Trap {
     return new BlueWater();
   }
 }
@@ -34,15 +35,15 @@ export class SecondLevel implements Level {
     return new SecondMap();
   }
 
-  public createLava(): Lava {
+  public createLava(): Trap {
     return new LightCoralLava();
   }
 
-  public createWall(): Wall {
+  public createWall(): Trap {
     return new BrownWall();
   }
 
-  public createWater(): Water {
+  public createWater(): Trap {
     return new DodgerBlueWater();
   }
 }
@@ -52,15 +53,15 @@ export class ThirdLevel implements Level {
     return new ThirdMap();
   }
 
-  public createLava(): Lava {
+  public createLava(): Trap {
     return new RedLava();
   }
 
-  public createWall(): Wall {
+  public createWall(): Trap {
     return new BlueWall();
   }
 
-  public createWater(): Water {
+  public createWater(): Trap {
     return new DarkBlueWater();
   }
 }

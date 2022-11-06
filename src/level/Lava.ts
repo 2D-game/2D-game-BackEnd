@@ -1,20 +1,18 @@
-export interface Lava {
-  getColor(): string;
-}
+import { Trap } from "./bridge/Trap";
 
-export class ColarLava implements Lava {
+export class ColarLava implements Trap {
   public getColor(): string {
     return "#ff7f50";
   }
 }
 
-export class LightCoralLava implements Lava {
+export class LightCoralLava implements Trap {
   public getColor(): string {
     return "#f08080";
   }
 }
 
-export class RedLava implements Lava {
+export class RedLava implements Trap {
   public getColor(): string {
     return "#ff0000";
   }
