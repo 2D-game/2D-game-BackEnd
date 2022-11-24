@@ -17,3 +17,9 @@ export class BlueWall implements Trap {
     return "#191970";
   }
 }
+
+export class GrayWall implements Trap {
+  public getColor(): string {
+    return "#808080";
+  }
+}

@@ -1,6 +1,6 @@
 import { LightCoralLava, RedLava, ColarLava } from "./Lava";
 import { DarkBlueWater, BlueWater, DodgerBlueWater } from "./Water";
-import { BlackWall, BlueWall, BrownWall } from "./Wall";
+import { BlackWall, BrownWall, GrayWall } from './Wall'
 import { FirstMap, MapDimensions, SecondMap, ThirdMap } from "./Map";
 import { Map } from "../map";
 import { Trap } from "./bridge/Trap";
@@ -58,7 +58,7 @@ export class ThirdLevel implements Level {
   }
 
   public createWall(): Trap {
-    return new BlueWall();
+    return new GrayWall();
   }
 
   public createWater(): Trap {

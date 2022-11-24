@@ -18,7 +18,7 @@ export class Usecase {
 	}
 
 	start(lobby: Lobby): [boolean, dto.StartRes | null] {
-		if (lobby.getPlayers().size < 2 || !lobby.allPlayersReady()) {
+		if (lobby.getPlayers().size < 1 || !lobby.allPlayersReady()) {
 			return [false, null]
 		}
 
@@ -28,7 +28,10 @@ export class Usecase {
 		const secondMap = Director.CreateMap2(
 			Levels[1].createMap().getInitialData()
 		)
-		const maps = [firstMap, secondMap]
+		const thirdMap = Director.CreateMap3(
+			Levels[2].createMap().getInitialData()
+		)
+		const maps = [firstMap, secondMap, thirdMap]
 		const game = new Game(lobby.getID(), maps)
 
 		this.lobbyFacade.movePlayersToGame(lobby, game)
