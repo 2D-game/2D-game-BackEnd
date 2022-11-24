@@ -1,34 +1,41 @@
-import { Map } from "../map";
-import { Player } from "../player";
+import { Map } from '../map'
+import { Player } from '../player'
+import { Director } from '../map/Builders/Director'
+import { Levels } from '../level/Level'
+import { Publisher } from '../map'
 
 export class Game {
-  private readonly id: string;
-  private readonly players: Set<Player>;
-  private readonly maps: Map[];
+	private readonly id: string
+	private readonly players: Set<Player>
+	private readonly maps: Map[]
 
-  constructor(id: string, maps: Map[]) {
-    this.id = id;
-    this.players = new Set();
-    this.maps = maps;
-  }
+	constructor(id: string, pub: Publisher) {
+		this.id = id
+		this.players = new Set()
 
-  getID(): string {
-    return this.id;
-  }
+		const firstMap = Director.CreateMap1(Levels[0].createMap().getInitialData(), this, 0, pub)
+		const secondMap = Director.CreateMap2(Levels[1].createMap().getInitialData(), this, 1, pub)
+		const thirdMap = Director.CreateMap3(Levels[2].createMap().getInitialData(), this, 2, pub)
+		this.maps = [firstMap, secondMap, thirdMap]
+	}
 
-  addPlayer(player: Player) {
-    this.players.add(player);
-  }
+	getID(): string {
+		return this.id
+	}
 
-  getPlayers(): Set<Player> {
-    return this.players;
-  }
+	addPlayer(player: Player) {
+		this.players.add(player)
+	}
 
-  deletePlayer(player: Player) {
-    this.players.delete(player);
-  }
+	getPlayers(): Set<Player> {
+		return this.players
+	}
 
-  getMap(level: number): Map {
-    return this.maps[level];
-  }
+	deletePlayer(player: Player) {
+		this.players.delete(player)
+	}
+
+	getMap(level: number): Map {
+		return this.maps[level]
+	}
 }

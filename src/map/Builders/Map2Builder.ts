@@ -117,10 +117,16 @@ export class Map2Builder implements IBuilder {
 
         return this;
     }
+
+	addItems(): IBuilder {
+		// for (let i = 0; i < 5; i++) {
+		// 	const coords = this.map.getRandomEmptyCoords()
+		// 	this.map.setObjectAt(coords, new Apple())
+		// }
+		return this;
+	}
+
     build(): Map {
         return this.map;
     }
-    
-    
-
 }

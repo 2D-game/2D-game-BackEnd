@@ -1,4 +1,5 @@
 import { IObject, Type } from './IObject'
+import { Player } from '../player'
 
 export class Lava implements IObject {
 	isSolid(): boolean {
@@ -8,4 +9,6 @@ export class Lava implements IObject {
 	getType(): Type {
 		return Type.LAVA
 	}
+
+	collect(player: Player): void { }
 }

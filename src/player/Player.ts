@@ -2,7 +2,6 @@ import { Lobby } from '../lobby'
 import { Game } from '../game'
 import * as crypto from 'crypto'
 import { Coordinates } from '../map'
-import { ICommand } from './command/ICommand'
 
 const ErrPlayerIsNotSpawned = 'Player is not spawned yet'
 
@@ -15,6 +14,7 @@ export class Player {
 	private coords: Coordinates | null
 	private level: number
 	private won: boolean
+	private score: number
 
 	constructor(username: string, lobby: Lobby | null = null) {
 		this.id = crypto.randomUUID()
@@ -25,6 +25,7 @@ export class Player {
 		this.coords = null
 		this.level = 0
 		this.won = false
+		this.score = 0
 	}
 
 	getID(): string {
@@ -94,5 +95,25 @@ export class Player {
 
 	incrementLevel() {
 		this.level++
+	}
+
+	die() {
+		const game = this.getGame()
+		if (game === null) {
+			return
+		}
+		this.setCoords(game.getMap(this.getLevel()).getSpawnPoint())
+	}
+
+	addScore(delta: number) {
+		this.score += delta
+	}
+
+	getScore() {
+		return this.score
+	}
+
+	deductScore(delta: number) {
+		this.score -= delta
 	}
 }

@@ -3,8 +3,6 @@ import { Direction, Event, Facade, Player, Presenter, Publisher } from './'
 import { Session, Sessions } from '../session'
 import { Lobby } from '../lobby'
 import { Type } from '../object'
-import { ICommand } from './command/ICommand'
-import { MoveCommand } from './command/MoveCommand'
 
 const ErrNotInGame = 'Not in game'
 const ErrNotInLobby = 'Not in lobby'
@@ -66,8 +64,9 @@ export class Usecase {
 				return this.facade.nextLevel(player)
 			} else if (!obj.isSolid()) {
 				player.setCoords(newCoords)
+				obj.collect(player)
 			} else if (obj.getType() === Type.WATER || obj.getType() === Type.LAVA) {
-				player.setCoords(game.getMap(player.getLevel()).getSpawnPoint())
+				player.die()
 			}
 		}
 

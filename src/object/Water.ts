@@ -1,4 +1,5 @@
 import { IObject, Type } from './IObject'
+import { Player } from '../player'
 
 export class Water implements IObject {
 	isSolid(): boolean {
@@ -8,4 +9,6 @@ export class Water implements IObject {
 	getType(): Type {
 		return Type.WATER
 	}
+
+	collect(player: Player): void { }
 }

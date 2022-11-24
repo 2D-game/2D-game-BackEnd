@@ -1,11 +1,11 @@
-import { createLevel, Level } from "./../level/Level";
+import { createLevel, Level } from '../level/Level';
 import * as dto from "./dto";
 import { Game } from "./";
 import { Map } from "../map";
 import { Player } from "../player";
 
 export class Presenter {
-  private static formatMap(map: Map): dto.Map {
+  public static formatMap(map: Map): dto.Map {
     const height = map.getHeight();
     const width = map.getWidth();
     const objects = new Array(height);

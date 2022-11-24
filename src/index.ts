@@ -7,6 +7,7 @@ import * as lobby from './lobby'
 import * as game from './game'
 import * as player from './player'
 import * as server from './server'
+import * as map from './map'
 import { IObserver } from './util/Observer'
 
 const app = express()
@@ -24,6 +25,7 @@ const lobbies = new lobby.Lobbies()
 const playerPub = new player.Publisher()
 const lobbyPub = new lobby.Publisher()
 const gamePub = new game.Publisher()
+const mapPub = new map.Publisher()
 
 const playerFacade = new player.Facade()
 const lobbyFacade = new lobby.Facade(lobbies)
@@ -31,7 +33,7 @@ const lobbyFacade = new lobby.Facade(lobbies)
 const sessionUcase = new session.Usecase(sessions)
 const playerUcase = new player.Usecase(sessions, playerPub, playerFacade)
 const lobbyUcase = new lobby.Usecase(lobbies, playerUcase, lobbyPub)
-const gameUcase = new game.Usecase(lobbies, gamePub, lobbyFacade)
+const gameUcase = new game.Usecase(lobbies, gamePub, mapPub, lobbyFacade)
 
 const obs: Array<IObserver> = [
 	new lobby.PlayerObserver(playerPub, io, lobbyUcase),
@@ -39,7 +41,9 @@ const obs: Array<IObserver> = [
 
 	new game.LobbyObserver(lobbyPub, io, gameUcase),
 	new game.PlayerObserver(playerPub, gameUcase),
-	new game.Observer(gamePub, io, gameUcase)
+	new game.Observer(gamePub, io, gameUcase),
+
+	new map.Observer(mapPub, io)
 ]
 obs.forEach((o) => o.start())
 
