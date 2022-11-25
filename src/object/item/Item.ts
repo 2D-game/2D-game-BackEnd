@@ -1,19 +1,21 @@
-import { Player } from '../../player'
+import { Player, Publisher as PlayerPublisher, Event as PlayerEv } from '../../player'
 import { Game } from '../../game'
-import { Coordinates, Event, Publisher } from '../../map'
+import { Coordinates, Event as MapEvent, Publisher as MapPublisher } from '../../map'
 import { IObject, NullObject, Type } from '../index'
 
 export abstract class Item implements IObject {
 	protected game: Game
 	protected level: number
 	protected coords: Coordinates
-	protected pub: Publisher
+	protected mapPub: MapPublisher
+	protected playerPub: PlayerPublisher
 
-	protected constructor(game: Game, level: number, coords: Coordinates, pub: Publisher) {
+	protected constructor(game: Game, level: number, coords: Coordinates, mapPub: MapPublisher, playerPub: PlayerPublisher) {
 		this.game = game
 		this.level = level
 		this.coords = coords
-		this.pub = pub
+		this.mapPub = mapPub
+		this.playerPub = playerPub
 	}
 
 	public getCords(): Coordinates {
@@ -29,7 +31,7 @@ export abstract class Item implements IObject {
 		if (!sufficient) {
 			return false
 		}
-		this.onScoreChange()
+		this.onScoreChange(player)
 
 		const deleted = this.deleteCurrentItem()
 		const spawned = this.spawnNewItem()
@@ -42,8 +44,8 @@ export abstract class Item implements IObject {
 
 	public abstract changeScore(player: Player): boolean
 
-	public onScoreChange() {
-
+	public onScoreChange(player: Player) {
+		this.playerPub.publish(PlayerEv.PLAYER_SCORE_CHANGE, player)
 	}
 
 	public deleteCurrentItem(): boolean {
@@ -60,7 +62,7 @@ export abstract class Item implements IObject {
 	}
 
 	public onMapChange() {
-		this.pub.publish(Event.MAP_CHANGE, {
+		this.mapPub.publish(MapEvent.MAP_CHANGE, {
 			map: this.game.getMap(this.level),
 			game: this.game
 		})

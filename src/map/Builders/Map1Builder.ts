@@ -5,9 +5,10 @@ import { Map } from '../Map'
 import { IBuilder } from './IBuilder'
 import { Apple } from '../../object/item/Apple'
 import { Game } from '../../game'
-import { Publisher } from '../Publisher'
+import { Publisher as MapPublisher } from '../Publisher'
 import { Pear } from '../../object/item/Pear'
 import { Portal } from '../../object/item/Portal'
+import { Publisher as PlayerPublisher } from '../../player'
 
 
 export class Map1Builder implements IBuilder {
@@ -64,17 +65,20 @@ export class Map1Builder implements IBuilder {
 		return this
 	}
 
-	addItems(game: Game, level: number, pub: Publisher): IBuilder {
+	addItems(game: Game, level: number, mapPub: MapPublisher, playerPub: PlayerPublisher): IBuilder {
 		const portalCoords = { x: 5, y: 8 }
-		this.map.setObjectAt(portalCoords, new Portal(game, level, portalCoords, pub, { x: 17, y: 2 }))
+		this.map.setObjectAt(
+			portalCoords,
+			new Portal(game, level, portalCoords, mapPub, playerPub, { x: 17, y: 2 })
+		)
 
 		for (let i = 0; i < 3; i++) {
 			const coords = this.map.getRandomEmptyCoords()
-			this.map.setObjectAt(coords, new Apple(game, level, coords, pub))
+			this.map.setObjectAt(coords, new Apple(game, level, coords, mapPub, playerPub))
 		}
 		for (let i = 0; i < 1; i++) {
 			const coords = this.map.getRandomEmptyCoords()
-			this.map.setObjectAt(coords, new Pear(game, level, coords, pub))
+			this.map.setObjectAt(coords, new Pear(game, level, coords, mapPub, playerPub))
 		}
 		return this
 	}

@@ -1,13 +1,13 @@
 import { Item } from './Item'
-import { Player } from '../../player'
+import { Player, Publisher as PlayerPublisher } from '../../player'
 import { Game } from '../../game'
 import { Coordinates } from '../../map'
 import { Type } from '../IObject'
-import { Publisher } from '../../map'
+import { Publisher as MapPublisher } from '../../map'
 
 export class Pear extends Item {
-	constructor(game: Game, level: number, coords: Coordinates, pub: Publisher) {
-		super(game, level, coords, pub)
+	constructor(game: Game, level: number, coords: Coordinates, mapPub: MapPublisher, playerPub: PlayerPublisher) {
+		super(game, level, coords, mapPub, playerPub)
 	}
 
 	public getType() {

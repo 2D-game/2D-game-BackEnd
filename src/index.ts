@@ -33,9 +33,11 @@ const lobbyFacade = new lobby.Facade(lobbies)
 const sessionUcase = new session.Usecase(sessions)
 const playerUcase = new player.Usecase(sessions, playerPub, playerFacade)
 const lobbyUcase = new lobby.Usecase(lobbies, playerUcase, lobbyPub)
-const gameUcase = new game.Usecase(lobbies, gamePub, mapPub, lobbyFacade)
+const gameUcase = new game.Usecase(lobbies, gamePub, mapPub, playerPub, lobbyFacade)
 
 const obs: Array<IObserver> = [
+	new player.Observer(playerPub, io),
+
 	new lobby.PlayerObserver(playerPub, io, lobbyUcase),
 	new lobby.Observer(lobbyPub, io, lobbyUcase),
 

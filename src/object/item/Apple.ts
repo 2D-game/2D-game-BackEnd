@@ -1,13 +1,13 @@
 import { Item } from './Item'
-import { Player } from '../../player'
+import { Player, Publisher as PlayerPublisher } from '../../player'
 import { Game } from '../../game'
 import { Coordinates } from '../../map'
 import { Type } from '../IObject'
-import { Publisher } from '../../map'
+import { Publisher as MapPublisher } from '../../map'
 
 export class Apple extends Item {
-	constructor(game: Game, level: number, coords: Coordinates, pub: Publisher) {
-		super(game, level, coords, pub)
+	constructor(game: Game, level: number, coords: Coordinates, mapPub: MapPublisher, playerPub: PlayerPublisher) {
+		super(game, level, coords, mapPub, playerPub)
 	}
 
 	public getType() {
@@ -22,7 +22,7 @@ export class Apple extends Item {
 	public spawnNewItem(): boolean {
 		const map = this.game.getMap(this.level)
 		const coords = map.getRandomEmptyCoords()
-		map.setObjectAt(coords, new Apple(this.game, this.level, coords, this.pub))
+		map.setObjectAt(coords, new Apple(this.game, this.level, coords, this.mapPub, this.playerPub))
 		return true
 	}
 }

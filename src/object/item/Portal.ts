@@ -1,15 +1,15 @@
 import { Item } from './Item'
-import { Player } from '../../player'
+import { Player, Publisher as PlayerPublisher } from '../../player'
 import { Game } from '../../game'
 import { Coordinates } from '../../map'
 import { Type } from '../IObject'
-import { Publisher } from '../../map'
+import { Publisher as MapPublisher } from '../../map'
 
 export class Portal extends Item {
 	private readonly teleportCoords: Coordinates
 
-	constructor(game: Game, level: number, coords: Coordinates, pub: Publisher, teleportCoords: Coordinates) {
-		super(game, level, coords, pub)
+	constructor(game: Game, level: number, coords: Coordinates, mapPub: MapPublisher, playerPub: PlayerPublisher, teleportCoords: Coordinates) {
+		super(game, level, coords, mapPub, playerPub)
 		this.teleportCoords = teleportCoords
 	}
 
