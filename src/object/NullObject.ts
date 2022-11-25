@@ -10,5 +10,5 @@ export class NullObject implements IObject {
 		return Type.NULL
 	}
 
-	collect(player: Player): void { }
+	collect(player: Player): boolean { return true }
 }

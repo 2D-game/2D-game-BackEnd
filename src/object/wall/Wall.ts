@@ -10,5 +10,5 @@ export class Wall implements IObject {
 		return Type.WALL
 	}
 
-	collect(player: Player): void { }
+	collect(player: Player): boolean { return true }
 }

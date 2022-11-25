@@ -10,5 +10,5 @@ export class Lava implements IObject {
 		return Type.LAVA
 	}
 
-	collect(player: Player): void { }
+	collect(player: Player): boolean { return true }
 }

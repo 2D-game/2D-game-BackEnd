@@ -3,6 +3,11 @@ import { Wall } from "../../object/wall/Wall";
 import { Water } from "../../object/Water";
 import { Map } from "../Map";
 import { IBuilder } from "./IBuilder";
+import { Game } from '../../game'
+import { Publisher } from '../Publisher'
+import { Apple } from '../../object/item/Apple'
+import { Pear } from '../../object/item/Pear'
+import { Portal } from '../../object/item/Portal'
 
 export class Map2Builder implements IBuilder {
     private map : Map;
@@ -118,12 +123,19 @@ export class Map2Builder implements IBuilder {
         return this;
     }
 
-	addItems(): IBuilder {
-		// for (let i = 0; i < 5; i++) {
-		// 	const coords = this.map.getRandomEmptyCoords()
-		// 	this.map.setObjectAt(coords, new Apple())
-		// }
-		return this;
+	addItems(game: Game, level: number, pub: Publisher): IBuilder {
+		const portalCoords = { x: 6, y: 12 }
+		this.map.setObjectAt(portalCoords, new Portal(game, level, portalCoords, pub, { x: 16, y: 8 }))
+
+		for (let i = 0; i < 5; i++) {
+			const coords = this.map.getRandomEmptyCoords()
+			this.map.setObjectAt(coords, new Apple(game, level, coords, pub))
+		}
+		for (let i = 0; i < 3; i++) {
+			const coords = this.map.getRandomEmptyCoords()
+			this.map.setObjectAt(coords, new Pear(game, level, coords, pub))
+		}
+		return this
 	}
 
     build(): Map {

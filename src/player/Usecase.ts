@@ -31,7 +31,6 @@ export class Usecase {
 	}
 
 	move(player: Player, direction: Direction): dto.MoveRes {
-
 		const game = player.getGame()
 		if (game === null) {
 			throw new Error(ErrNotInGame)
@@ -62,9 +61,8 @@ export class Usecase {
 		if (obj !== null) {
 			if (obj.getType() == Type.FINISH) {
 				return this.facade.nextLevel(player)
-			} else if (!obj.isSolid()) {
+			} else if (!obj.isSolid() && obj.collect(player)) {
 				player.setCoords(newCoords)
-				obj.collect(player)
 			} else if (obj.getType() === Type.WATER || obj.getType() === Type.LAVA) {
 				player.die()
 			}

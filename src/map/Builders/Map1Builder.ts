@@ -6,6 +6,8 @@ import { IBuilder } from './IBuilder'
 import { Apple } from '../../object/item/Apple'
 import { Game } from '../../game'
 import { Publisher } from '../Publisher'
+import { Pear } from '../../object/item/Pear'
+import { Portal } from '../../object/item/Portal'
 
 
 export class Map1Builder implements IBuilder {
@@ -63,9 +65,16 @@ export class Map1Builder implements IBuilder {
 	}
 
 	addItems(game: Game, level: number, pub: Publisher): IBuilder {
-		for (let i = 0; i < 5; i++) {
+		const portalCoords = { x: 5, y: 8 }
+		this.map.setObjectAt(portalCoords, new Portal(game, level, portalCoords, pub, { x: 17, y: 2 }))
+
+		for (let i = 0; i < 3; i++) {
 			const coords = this.map.getRandomEmptyCoords()
 			this.map.setObjectAt(coords, new Apple(game, level, coords, pub))
+		}
+		for (let i = 0; i < 1; i++) {
+			const coords = this.map.getRandomEmptyCoords()
+			this.map.setObjectAt(coords, new Pear(game, level, coords, pub))
 		}
 		return this
 	}

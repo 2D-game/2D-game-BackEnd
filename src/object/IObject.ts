@@ -7,10 +7,12 @@ export enum Type {
 	WATER = 'WATER',
 	FINISH = 'FINISH',
 	APPLE = 'APPLE',
+	PEAR = 'PEAR',
+	PORTAL = 'PORTAL',
 }
 
 export interface IObject {
 	isSolid(): boolean
 	getType(): Type
-	collect(player: Player): void
+	collect(player: Player): boolean
 }

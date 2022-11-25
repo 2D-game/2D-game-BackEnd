@@ -10,5 +10,5 @@ export class Finish implements IObject {
 		return Type.FINISH
 	}
 
-	collect(player: Player): void { }
+	collect(player: Player): boolean { return true }
 }

@@ -1,8 +1,7 @@
 import { Player } from '../../player'
 import { Game } from '../../game'
-import { Coordinates } from '../../map'
+import { Coordinates, Event, Publisher } from '../../map'
 import { IObject, NullObject, Type } from '../index'
-import { Event, Publisher } from '../../map'
 
 export abstract class Item implements IObject {
 	protected game: Game
@@ -22,19 +21,30 @@ export abstract class Item implements IObject {
 	}
 
 	public readonly isSolid = () => false
+
 	public abstract getType(): Type
 
-	public readonly collect = (player: Player) => {
-		this.changeScore(player)
+	public readonly collect = (player: Player): boolean => {
+		const sufficient = this.changeScore(player)
+		if (!sufficient) {
+			return false
+		}
+		this.onScoreChange()
+
 		const deleted = this.deleteCurrentItem()
 		const spawned = this.spawnNewItem()
-		this.teleportPlayer(player)
+		const teleported = this.teleportPlayer(player)
 		if (deleted || spawned) {
 			this.onMapChange()
 		}
+		return !teleported
 	}
 
-	public abstract changeScore(player: Player): void
+	public abstract changeScore(player: Player): boolean
+
+	public onScoreChange() {
+
+	}
 
 	public deleteCurrentItem(): boolean {
 		this.game
@@ -45,12 +55,14 @@ export abstract class Item implements IObject {
 
 	public abstract spawnNewItem(): boolean
 
-	public teleportPlayer(player: Player) { }
+	public teleportPlayer(player: Player): boolean {
+		return false
+	}
 
 	public onMapChange() {
 		this.pub.publish(Event.MAP_CHANGE, {
 			map: this.game.getMap(this.level),
-			game: this.game,
+			game: this.game
 		})
 	}
 }

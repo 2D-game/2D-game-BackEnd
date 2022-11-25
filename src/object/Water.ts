@@ -10,5 +10,5 @@ export class Water implements IObject {
 		return Type.WATER
 	}
 
-	collect(player: Player): void { }
+	collect(player: Player): boolean { return true }
 }
