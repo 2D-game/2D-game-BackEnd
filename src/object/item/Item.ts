@@ -2,20 +2,16 @@ import { Player, Publisher as PlayerPublisher, Event as PlayerEv } from '../../p
 import { Game } from '../../game'
 import { Coordinates, Event as MapEvent, Publisher as MapPublisher } from '../../map'
 import { IObject, NullObject, Type } from '../index'
+import { Flyweight } from './Flyweight'
+import { FlyweightFactory } from './FlyweightFactory'
 
 export abstract class Item implements IObject {
-	protected game: Game
-	protected level: number
+	protected fw: Flyweight
 	protected coords: Coordinates
-	protected mapPub: MapPublisher
-	protected playerPub: PlayerPublisher
 
 	protected constructor(game: Game, level: number, coords: Coordinates, mapPub: MapPublisher, playerPub: PlayerPublisher) {
-		this.game = game
-		this.level = level
+		this.fw = FlyweightFactory.getFlyweight(game, level, mapPub, playerPub)
 		this.coords = coords
-		this.mapPub = mapPub
-		this.playerPub = playerPub
 	}
 
 	public getCords(): Coordinates {
@@ -45,12 +41,12 @@ export abstract class Item implements IObject {
 	public abstract changeScore(player: Player): boolean
 
 	public onScoreChange(player: Player) {
-		this.playerPub.publish(PlayerEv.PLAYER_SCORE_CHANGE, player)
+		this.fw.getPlayerPub().publish(PlayerEv.PLAYER_SCORE_CHANGE, player)
 	}
 
 	public deleteCurrentItem(): boolean {
-		this.game
-			.getMap(this.level)
+		this.fw.getGame()
+			.getMap(this.fw.getLevel())
 			.setObjectAt(this.coords, new NullObject())
 		return true
 	}
@@ -62,9 +58,9 @@ export abstract class Item implements IObject {
 	}
 
 	public onMapChange() {
-		this.mapPub.publish(MapEvent.MAP_CHANGE, {
-			map: this.game.getMap(this.level),
-			game: this.game
+		this.fw.getMapPub().publish(MapEvent.MAP_CHANGE, {
+			map: this.fw.getGame().getMap(this.fw.getLevel()),
+			game: this.fw.getGame()
 		})
 	}
 }

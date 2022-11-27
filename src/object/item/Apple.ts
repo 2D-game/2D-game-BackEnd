@@ -20,9 +20,9 @@ export class Apple extends Item {
 	}
 
 	public spawnNewItem(): boolean {
-		const map = this.game.getMap(this.level)
+		const map = this.fw.getGame().getMap(this.fw.getLevel())
 		const coords = map.getRandomEmptyCoords()
-		map.setObjectAt(coords, new Apple(this.game, this.level, coords, this.mapPub, this.playerPub))
+		map.setObjectAt(coords, new Apple(this.fw.getGame(), this.fw.getLevel(), coords, this.fw.getMapPub(), this.fw.getPlayerPub()))
 		return true
 	}
 }
