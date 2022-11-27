@@ -60,6 +60,7 @@ export abstract class Item implements IObject {
 	public onMapChange() {
 		this.fw.getMapPub().publish(MapEvent.MAP_CHANGE, {
 			map: this.fw.getGame().getMap(this.fw.getLevel()),
+			level: this.fw.getLevel(),
 			game: this.fw.getGame()
 		})
 	}

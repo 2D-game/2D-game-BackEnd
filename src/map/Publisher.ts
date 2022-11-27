@@ -8,6 +8,7 @@ export enum Event {
 
 export type MapChange = {
 	map: Map
+	level: number
 	game: Game
 }
 
