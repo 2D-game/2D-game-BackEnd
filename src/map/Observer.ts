@@ -28,7 +28,10 @@ export class Observer implements IObserver {
 	}
 
 	private onMapChange(mapChange: MapChange) {
-		const res = ExtendedSocket.response(Presenter.formatMap(mapChange.map))
+		const res = ExtendedSocket.response({
+			map: Presenter.formatMap(mapChange.map),
+			level: mapChange.level,
+		})
 		this.io.to(mapChange.game.getID()).emit('map_change', res)
 	}
 }
