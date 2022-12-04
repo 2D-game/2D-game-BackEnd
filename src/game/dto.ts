@@ -22,6 +22,6 @@ export type GetPlayersRes = {
     username: string;
     level: number;
     coords: Coordinates;
-	image: string | null;
+	image: string | undefined;
   }[];
 };

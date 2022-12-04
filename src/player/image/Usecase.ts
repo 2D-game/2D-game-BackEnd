@@ -10,6 +10,24 @@ export enum PlayerColor {
 	GREEN = 'GREEN',
 }
 
+export class Image {
+	private readonly color: PlayerColor
+	private readonly encoded: string
+
+	constructor(color: PlayerColor, encoded: string) {
+		this.color = color
+		this.encoded = encoded
+	}
+
+	getColor(): PlayerColor {
+		return this.color
+	}
+
+	getEncoded(): string {
+		return this.encoded
+	}
+}
+
 function timeout(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -35,13 +53,13 @@ export class Usecase implements IUsecase {
 		return unused[0]
 	}
 
-	async getImage(color: PlayerColor): Promise<string> {
+	async getImage(color: PlayerColor): Promise<Image> {
 		await timeout(5000)
 		const url = this.images.get(color) as string
 		const response = await axios.get(url, {
 			responseType: 'arraybuffer'
 		})
 		const buffer = Buffer.from(response.data, 'binary')
-		return buffer.toString('base64')
+		return new Image(color, buffer.toString('base64'))
 	}
 }

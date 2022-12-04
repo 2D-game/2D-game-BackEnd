@@ -1,7 +1,7 @@
-import { PlayerColor } from './Usecase'
+import { Image, PlayerColor } from './Usecase'
 
 export interface IUsecase {
 	getUnusedColor(used: PlayerColor[]): PlayerColor
 
-	getImage(color: PlayerColor): Promise<string>
+	getImage(color: PlayerColor): Promise<Image>
 }
