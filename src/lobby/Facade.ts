@@ -1,7 +1,7 @@
 import { Lobbies } from './Lobbies'
 import { Game } from '../game'
 import { Lobby } from './Lobby'
-import { PlayerColor } from '../player/image'
+import { Image, PlayerColor } from '../player/image'
 import { IUsecase } from '../player/image'
 
 export class Facade {
@@ -13,7 +13,7 @@ export class Facade {
 		this.imageUcase = imageUcase
 	}
 
-	public async getImages(lobby: Lobby): Promise<string[]> {
+	public async getImages(lobby: Lobby): Promise<Image[]> {
 		const usedColors: PlayerColor[] = []
 		const size = lobby.getPlayers().size
 		for (let i = 0; i < size; i++) {

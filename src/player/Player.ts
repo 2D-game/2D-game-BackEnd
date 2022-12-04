@@ -2,6 +2,7 @@ import { Lobby } from '../lobby'
 import { Game } from '../game'
 import * as crypto from 'crypto'
 import { Coordinates } from '../map'
+import { Image } from './image'
 
 const ErrPlayerIsNotSpawned = 'Player is not spawned yet'
 
@@ -15,7 +16,7 @@ export class Player {
 	private level: number
 	private won: boolean
 	private score: number
-	private image: string | null
+	private image: Image | null
 
 	constructor(username: string, lobby: Lobby | null = null) {
 		this.id = crypto.randomUUID()
@@ -86,11 +87,11 @@ export class Player {
 		return this
 	}
 
-	getImage(): string | null {
+	getImage(): Image | null {
 		return this.image
 	}
 
-	setImage(image: string): Player {
+	setImage(image: Image): Player {
 		this.image = image
 		return this
 	}

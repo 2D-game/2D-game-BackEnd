@@ -1,11 +1,11 @@
 import { IUsecase } from './IUsecase'
-import { PlayerColor, Usecase } from './Usecase'
+import { Image, PlayerColor, Usecase } from './Usecase'
 
 class ImageCache {
 	private readonly expires: Date
-	private readonly image: string
+	private readonly image: Image
 
-	constructor(image: string, expires: Date) {
+	constructor(image: Image, expires: Date) {
 		this.image = image
 		this.expires = expires
 	}
@@ -14,7 +14,7 @@ class ImageCache {
 		return this.expires < new Date()
 	}
 
-	getImage(): string {
+	getImage(): Image {
 		return this.image
 	}
 }
@@ -34,7 +34,7 @@ export class ProxyUsecase implements IUsecase {
 		return this.usecase.getUnusedColor(used)
 	}
 
-	async getImage(color: PlayerColor): Promise<string> {
+	async getImage(color: PlayerColor): Promise<Image> {
 		const cached = this.imageCache.get(color)
 		if (cached && !cached.isExpired()) {
 			return cached.getImage()

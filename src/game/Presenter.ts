@@ -42,7 +42,7 @@ export class Presenter {
 				username: player.getUsername(),
 				level: player.getLevel(),
 				coords: player.getCoords(),
-				image: player.getImage()
+				image: player.getImage()?.getEncoded()
 			}))
 		}
 	}
