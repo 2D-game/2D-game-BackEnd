@@ -28,10 +28,10 @@ const lobbyPub = new lobby.Publisher()
 const gamePub = new game.Publisher()
 const mapPub = new map.Publisher()
 
-const imageUcase = new image.Usecase()
+const imageProxyUcase = new image.ProxyUsecase(120)
 
 const playerFacade = new player.Facade()
-const lobbyFacade = new lobby.Facade(lobbies, imageUcase)
+const lobbyFacade = new lobby.Facade(lobbies, imageProxyUcase)
 
 const sessionUcase = new session.Usecase(sessions)
 const playerUcase = new player.Usecase(sessions, playerPub, playerFacade)
