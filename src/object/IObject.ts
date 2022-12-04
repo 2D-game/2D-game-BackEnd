@@ -9,6 +9,7 @@ export enum Type {
 	APPLE = 'APPLE',
 	PEAR = 'PEAR',
 	PORTAL = 'PORTAL',
+	BOX = 'BOX',
 }
 
 export interface IObject {
