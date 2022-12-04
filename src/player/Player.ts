@@ -15,6 +15,7 @@ export class Player {
 	private level: number
 	private won: boolean
 	private score: number
+	private image: string | null
 
 	constructor(username: string, lobby: Lobby | null = null) {
 		this.id = crypto.randomUUID()
@@ -26,6 +27,7 @@ export class Player {
 		this.level = 0
 		this.won = false
 		this.score = 0
+		this.image = null
 	}
 
 	getID(): string {
@@ -81,6 +83,15 @@ export class Player {
 
 	setLevel(level: number): Player {
 		this.level = level
+		return this
+	}
+
+	getImage(): string | null {
+		return this.image
+	}
+
+	setImage(image: string): Player {
+		this.image = image
 		return this
 	}
 

@@ -30,8 +30,8 @@ export class LobbyObserver implements IObserver {
     );
   }
 
-  private onPlayerReadinessChange(lobby: Lobby) {
-    const [started, res] = this.ucase.start(lobby);
+  private async onPlayerReadinessChange(lobby: Lobby) {
+    const [started, res] = await this.ucase.start(lobby);
     if (!started || res === null) {
       return;
     }

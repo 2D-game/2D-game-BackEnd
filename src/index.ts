@@ -8,6 +8,7 @@ import * as game from './game'
 import * as player from './player'
 import * as server from './server'
 import * as map from './map'
+import * as image from './player/image'
 import { IObserver } from './util/Observer'
 
 const app = express()
@@ -27,8 +28,10 @@ const lobbyPub = new lobby.Publisher()
 const gamePub = new game.Publisher()
 const mapPub = new map.Publisher()
 
+const imageUcase = new image.Usecase()
+
 const playerFacade = new player.Facade()
-const lobbyFacade = new lobby.Facade(lobbies)
+const lobbyFacade = new lobby.Facade(lobbies, imageUcase)
 
 const sessionUcase = new session.Usecase(sessions)
 const playerUcase = new player.Usecase(sessions, playerPub, playerFacade)

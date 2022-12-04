@@ -22,14 +22,14 @@ export class Usecase {
 		this.lobbyFacade = lobbyFacade
 	}
 
-	start(lobby: Lobby): [boolean, dto.StartRes | null] {
+	async start(lobby: Lobby): Promise<[boolean, dto.StartRes | null]> {
 		if (lobby.getPlayers().size < 1 || !lobby.allPlayersReady()) {
 			return [false, null]
 		}
 
 		const game = new Game(lobby.getID(), this.mapPub, this.playerPub)
 
-		this.lobbyFacade.movePlayersToGame(lobby, game)
+		await this.lobbyFacade.movePlayersToGame(lobby, game)
 		this.pub.publish(Event.PLAYER_LIST_CHANGE, game)
 
 		return [true, Presenter.getStartRes(game, Levels[0])]
