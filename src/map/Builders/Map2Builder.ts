@@ -143,7 +143,7 @@ export class Map2Builder implements IBuilder {
 
         for (let i = 0; i < 2; i++) {
 			const coords = this.map.getRandomEmptyCoords()
-			this.map.setObjectAt(coords, new Box(game, level, coords, mapPub, playerPub, null))
+			this.map.setObjectAt(coords, new Box(game, level, coords, mapPub, playerPub))
 		}
 
 		return this
