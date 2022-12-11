@@ -8,10 +8,18 @@ import { FlyweightFactory } from './FlyweightFactory'
 export abstract class Item implements IObject {
 	protected fw: Flyweight
 	protected coords: Coordinates
+	// protected game: Game
+	// protected level: number
+	// protected mapPub: MapPublisher
+	// protected playerPub: PlayerPublisher
 
 	protected constructor(game: Game, level: number, coords: Coordinates, mapPub: MapPublisher, playerPub: PlayerPublisher) {
 		this.fw = FlyweightFactory.getFlyweight(game, level, mapPub, playerPub)
 		this.coords = coords
+		// this.game = game
+		// this.level = level
+		// this.mapPub = mapPub
+		// this.playerPub = playerPub
 	}
 
 	public getCords(): Coordinates {
