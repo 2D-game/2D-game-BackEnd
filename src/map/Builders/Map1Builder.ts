@@ -10,6 +10,8 @@ import { Pear } from '../../object/item/Pear'
 import { Portal } from '../../object/item/Portal'
 import { Publisher as PlayerPublisher } from '../../player'
 import { Box } from '../../object/item/Box'
+import { GiftBox } from '../../object/item/GiftBox'
+import { BadApple } from '../../object/item/BadApple'
 
 
 export class Map1Builder implements IBuilder {
@@ -87,6 +89,15 @@ export class Map1Builder implements IBuilder {
 			this.map.setObjectAt(coords, new Box(game, level, coords, mapPub, playerPub))
 		}
 
+		for (let i = 0; i < 1; i++) {
+			const coords = this.map.getRandomEmptyCoords()
+			this.map.setObjectAt(coords, new GiftBox(game, level, coords, mapPub, playerPub))
+		}
+
+		for (let i = 0; i < 1; i++) {
+			const coords = this.map.getRandomEmptyCoords()
+			this.map.setObjectAt(coords, new BadApple(game, level, coords, mapPub, playerPub))
+		}
 		return this
 	}
 
